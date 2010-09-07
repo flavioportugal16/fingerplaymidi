@@ -22,6 +22,11 @@
 			android:summary="Set the server address"  
 			android:dialogTitle="Server Address"  
 		/>
+		<CheckBoxPreference  
+            android:key="settings_sensors_enable"  
+            android:title="Enable sensors"  
+            android:summary="Sends sensor values when enabled."  
+        />
         <CheckBoxPreference  
             android:key="settings_server_connect"  
             android:title="Connect to Server"  

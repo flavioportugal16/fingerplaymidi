@@ -93,6 +93,8 @@ public class LayoutManager {
 		int numTouchPads = 0;
 		int numSliders = 0;
 		int numButtons = 0;
+		int numSensorsThreeaxis = 0;
+		int numSensorsSimple = 0;
 
 		float deltaWidth = androidWidth / (float)getIntegerAttribute(layout, "screenWidth");
 		float deltaHeight = androidHeight / (float)getIntegerAttribute(layout, "screenHeight");
@@ -141,7 +143,21 @@ public class LayoutManager {
 
 						} else if (name.equals("touchpad") || name.equals("xypad")) {
 							widget = new XYPad("XY Pad " + (++numTouchPads), widgetControllerNumber);
-
+							//System.out.println("screen.addWidget( new Touchpad() ); " + numTouchPads);
+						}
+						else if (name.equals("accelerometer") 
+								|| name.equals("orientation") 
+								|| name.equals("magfield")
+								|| name.equals("gyroscope")) {	//3-axis
+							widget = new XYPad("Sensor " + name, widgetControllerNumber);
+							//System.out.println("screen.addWidget( new Touchpad() ); " + numTouchPads);
+						}
+						else if (name.equals("light")
+								|| name.equals("pressure")
+								|| name.equals("proximity")
+								|| name.equals("temperature")) {	//single value
+							widget = new Slider("Sensor " + name, widgetControllerNumber);
+							//System.out.println("screen.addWidget( new Slider() ); " + numSliders);
 						}
 						if (widget != null) {
 							widget.x = widgetX;

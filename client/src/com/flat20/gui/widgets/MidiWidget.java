@@ -1,9 +1,14 @@
 package com.flat20.gui.widgets;
 
+import android.os.SystemClock;
+
 import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.fingerplay.midicontrollers.IOnControlChangeListener;
 
 public abstract class MidiWidget extends Widget implements IMidiController {
+
+	//Stop sensor update flooding
+	private long mlast_send_time = SystemClock.uptimeMillis();
 
 	protected String mName = null;
 
@@ -18,6 +23,11 @@ public abstract class MidiWidget extends Widget implements IMidiController {
 
 		setName(name);
 		setControllerNumber(controllerNumber);
+	}
+	  
+	public long getLastSendTime()
+	{
+		return mlast_send_time;
 	}
 
 	public void setName(String name) {
@@ -39,6 +49,7 @@ public abstract class MidiWidget extends Widget implements IMidiController {
 	}
 
 	public void sendControlChange(int index, int value) {
+		mlast_send_time = SystemClock.uptimeMillis();
 		if (listener != null) {
 			listener.onControlChange(this, mControllerNumber + index, value);
 		}

@@ -1,11 +1,18 @@
 package com.flat20.fingerplay;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Toast;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.hardware.Sensor;
+import android.util.Log;
 
 import com.flat20.fingerplay.midicontrollers.MidiControllerManager;
 import com.flat20.fingerplay.network.ConnectionManager;
@@ -19,7 +26,7 @@ import com.flat20.gui.sprites.Logo;
 import com.flat20.gui.widgets.MidiWidgetContainer;
 import com.flat20.gui.LayoutManager;
 
-public class FingerPlayActivity extends InteractiveActivity {
+public class FingerPlayActivity extends InteractiveActivity implements SensorEventListener {
 
 	private SettingsModel mSettingsModel;
 
@@ -31,14 +38,19 @@ public class FingerPlayActivity extends InteractiveActivity {
  
     private NavigationOverlay mNavigationOverlay; 
  
+    public SensorManager sensorManager;
+
+    private List<Sensor> sensors = new ArrayList<Sensor>();
+    private boolean sensorsEnabled = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
+		mMidiControllerManager = MidiControllerManager.getInstance();        
+		
     	// Init needs to be done first!
 		mSettingsModel = SettingsModel.getInstance();
 		mSettingsModel.init(this);
-
-		mMidiControllerManager = MidiControllerManager.getInstance();        
 
 		super.onCreate(savedInstanceState);
 
@@ -48,6 +60,10 @@ public class FingerPlayActivity extends InteractiveActivity {
         Toast info = Toast.makeText(this, "Go to http://thesundancekid.net/ for help.", Toast.LENGTH_LONG);
         info.show();
 
+        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+
+        sensors = new ArrayList<Sensor>(sensorManager.getSensorList(Sensor.TYPE_ALL));
+     
         // Simple splash animation
 
         Splash navSplash = new Splash(mNavigationOverlay, 64, 30, mWidth, mNavigationOverlay.x);
@@ -127,6 +143,54 @@ public class FingerPlayActivity extends InteractiveActivity {
 		}
 */
 	};
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (sensorsEnabled)
+			startSensors();
+		else
+			stopSensors();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (sensorsEnabled)
+			stopSensors();
+	}
+
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    		//Log.d("ACCU", String.format("onAccuracyChanged  sensor: %d   accuraccy: %d", sensor, accuracy));
+  	}
+	
+	public boolean startSensors() {
+		sensorsEnabled = true;
+		boolean retval = true;
+		for (int i = 0; i < sensors.size(); i++)
+			retval = retval && sensorManager.registerListener(this, sensors.get(i), SensorManager.SENSOR_DELAY_UI);
+		mMidiControllerManager.startSensors();
+		return retval;
+	}
+	
+	public void stopSensors() {
+		sensorsEnabled = false;
+		mMidiControllerManager.stopSensors();
+		for (int i = 0; i < sensors.size(); i++)
+			sensorManager.unregisterListener(this, sensors.get(i));
+	}
+
+	public void onSensorChanged(SensorEvent e) {
+		float[] values = e.values;
+/*
+  		int sensorReporting = e.sensor.getType();
+		String str = "Sensor " + sensorReporting + " changed: ";
+		for (int i = 0; i < values.length; i++)
+			str += " " + values[i] + " ";
+		Log.i("SENSOR", str);
+*/
+		mMidiControllerManager.onSensorChanged(e.sensor, values);
+	}
 
 	@Override
 	protected void onDestroy() {

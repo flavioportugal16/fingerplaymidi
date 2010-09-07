@@ -70,8 +70,24 @@ public class XYPad extends DefaultMidiWidget implements IMidiController {
 
 	}
 
+	public void setMeterx(int newx)
+	{
+		mMeter.x = Math.max(0, Math.min(width-32, newx-16));
+		mMeterOff.x = mMeter.x;
+		lastValueX = newx;		
+	}
+
+	public void setMetery(int newy)
+	{	
+		mMeter.y = Math.max(0, Math.min(height-32, newy-16));
+		mMeterOff.y = mMeter.y;
+		lastValueY = newy;
+	}
+	
 	@Override
 	public boolean onTouchDown(int touchX, int touchY, float pressure, int pointerId) {
+		if (this.mName.startsWith("Sensor"))	//TODO: custom widgets for sensors
+			return true;
 		press(pressure);
 		return true;
 	}

@@ -26,6 +26,7 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 	
     protected ListPreference mServerTypes;
     protected CheckBoxPreference mServerConnectCheckBox;
+    protected CheckBoxPreference mSensorCheckBox;
     protected EditTextPreference mServerAddressEditText;
 
     public ListPreference mLayoutFiles;
@@ -48,6 +49,8 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 		mServerTypes.setOnPreferenceChangeListener(this);
 		mServerConnectCheckBox = (CheckBoxPreference) findPreference( "settings_server_connect" );
 		mServerConnectCheckBox.setOnPreferenceChangeListener(this);
+		mSensorCheckBox = (CheckBoxPreference) findPreference( "settings_sensors_enable" );
+		mSensorCheckBox.setOnPreferenceChangeListener(this);
 		mServerAddressEditText = (EditTextPreference) findPreference( "settings_server_address" );
 		mServerAddressEditText.setOnPreferenceChangeListener(this);
 		mDevices = (ListPreference) findPreference( "settings_midi_out" );
@@ -242,6 +245,9 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 			mLayoutFiles.setSummary( "Default" );
 		else
 			mLayoutFiles.setSummary( "/FingerPlayMIDI/<xml..>" );
+		
+		//Update sensor state
+		mSensorCheckBox.setChecked(mModel.sensorsEnabled);		
 
 	}
 
@@ -259,7 +265,11 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 		} else if (preference == mLayoutFiles) {
 			mModel.setLayoutFile((String) newValue);
 			return true;
+		} else if (preference == mSensorCheckBox) {
+			mModel.setSensors(((Boolean)newValue).booleanValue());
+			return true;
 		}
+
 		return false;
 	}
 
