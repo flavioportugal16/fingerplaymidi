@@ -49,12 +49,7 @@
                 android:title="MIDI Out Device"
                 android:summary="Select a device."
                 android:dialogTitle="Select a MIDI Device"  
-            /><!-- 
-            <CheckBoxPreference  
-                android:key="pref_use_sensors"  
-                android:title="Use Sensors"  
-                android:summary="Sends sensor MIDI messages if enabled."  
-            />-->
+            />
         <PreferenceScreen
         	android:key="settings_midi_controllers"
             android:title="Configure MIDI Controllers"  

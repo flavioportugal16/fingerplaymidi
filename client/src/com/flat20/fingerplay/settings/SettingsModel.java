@@ -58,7 +58,7 @@ public class SettingsModel {
 		serverAddress = mSharedPreferences.getString("settings_server_address", null);
 		midiDevice = mSharedPreferences.getString("settings_midi_out", null);
 		layoutFile = mSharedPreferences.getString("settings_layout_file", null);
-		sensorsEnabled = mSharedPreferences.getBoolean("settings_sensors_enabled", false);
+		sensorsEnabled = mSharedPreferences.getBoolean("settings_sensors_enable", false);
 
 		if (sensorsEnabled)
 			((FingerPlayActivity)this.context).startSensors();

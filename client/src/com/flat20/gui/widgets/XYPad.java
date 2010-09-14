@@ -94,6 +94,8 @@ public class XYPad extends DefaultMidiWidget implements IMidiController {
 
 	@Override
 	public boolean onTouchMove(int touchX, int touchY, float pressure, int pointerId) {
+		if (this.mName.startsWith("Sensor"))	//TODO: custom widgets for sensors
+			return true;
 		int valueX = (int) Math.max(0, Math.min(0x7F, ((float) touchX / width) * 0x7F) );
 		int valueY = (int) Math.max(0, Math.min(0x7F, ((float) touchY / height) * 0x7F) );
 		if (valueX != lastValueX) {
@@ -113,6 +115,8 @@ public class XYPad extends DefaultMidiWidget implements IMidiController {
 
 	@Override
 	public boolean onTouchUp(int touchX, int touchY, float pressure, int pointerId) {
+		if (this.mName.startsWith("Sensor"))	//TODO: custom widgets for sensors
+			return true;
 		if (!isHolding())
 			release(pressure);
 		return true;
@@ -120,6 +124,8 @@ public class XYPad extends DefaultMidiWidget implements IMidiController {
 
 	@Override
 	public boolean onTouchUpOutside(int touchX, int touchY, float pressure, int pointerId) {
+		if (this.mName.startsWith("Sensor"))	//TODO: custom widgets for sensors
+			return true;
 		if (!isHolding())
 			release(pressure);
 		return true;
