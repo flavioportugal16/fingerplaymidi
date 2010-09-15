@@ -26,7 +26,6 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 	
     protected ListPreference mServerTypes;
     protected CheckBoxPreference mServerConnectCheckBox;
-    protected CheckBoxPreference mSensorCheckBox;
     protected EditTextPreference mServerAddressEditText;
 
     public ListPreference mLayoutFiles;
@@ -49,8 +48,6 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 		mServerTypes.setOnPreferenceChangeListener(this);
 		mServerConnectCheckBox = (CheckBoxPreference) findPreference( "settings_server_connect" );
 		mServerConnectCheckBox.setOnPreferenceChangeListener(this);
-		mSensorCheckBox = (CheckBoxPreference) findPreference( "settings_sensors_enable" );
-		mSensorCheckBox.setOnPreferenceChangeListener(this);
 		mServerAddressEditText = (EditTextPreference) findPreference( "settings_server_address" );
 		mServerAddressEditText.setOnPreferenceChangeListener(this);
 		mDevices = (ListPreference) findPreference( "settings_midi_out" );
@@ -92,7 +89,7 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 				for (int i=0; i<parameters.length; i++) {
 					if (parameters[i].visible) {
 						Preference p = new Preference(this);
-						p.setKey(mc.getName() + "_" + (mc.getControllerNumber() + parameters[i].id)); // A Hack so we can use the cc number later. 
+						p.setKey(mc.getName() + "_" + parameters[i].id); // A Hack so we can use the cc number later. 
 						p.setPersistent(false);
 						p.setTitle("Send " + parameters[i].name);
 						p.setSummary("Sends the " + parameters[i].name + " command to the server.");
@@ -245,9 +242,6 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 			mLayoutFiles.setSummary( "Default" );
 		else
 			mLayoutFiles.setSummary( "/FingerPlayMIDI/<xml..>" );
-		
-		//Update sensor state
-		mSensorCheckBox.setChecked(mModel.sensorsEnabled);		
 
 	}
 
@@ -265,11 +259,7 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 		} else if (preference == mLayoutFiles) {
 			mModel.setLayoutFile((String) newValue);
 			return true;
-		} else if (preference == mSensorCheckBox) {
-			mModel.setSensors(((Boolean)newValue).booleanValue());
-			return true;
 		}
-
 		return false;
 	}
 
@@ -287,8 +277,8 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
     		String key = preference.getKey();
     		String name[] = key.split("_");
     		String controllerName = name[0];
-    		int controllerNumber = Integer.parseInt(name[1]);
-    		mController.sendControlChange(controllerName, controllerNumber);
+    		int parameterId = Integer.parseInt(name[1]);
+    		mController.sendControlChange(controllerName, parameterId);
     	}
 
     	return true;

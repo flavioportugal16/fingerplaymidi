@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.flat20.fingerplay.FingerPlayActivity;
 import com.flat20.fingerplay.midicontrollers.MidiControllerManager;
 import com.flat20.fingerplay.network.ConnectionManager;
 
@@ -35,9 +34,9 @@ public class SettingsModel {
 	public String[] midiDevices = null;
 	public String layoutFile = null;
 	public String[] layoutFiles = null;
-	public boolean sensorsEnabled;
 
-	private Context context;
+
+
 	private static SettingsModel sSingleton = new SettingsModel(); 
 
 	public static SettingsModel getInstance() {
@@ -48,9 +47,8 @@ public class SettingsModel {
 	}
 
 	public void init(Context context) {
-		this.context = context;
 		midiControllerManager = MidiControllerManager.getInstance();
-		
+
 		// Load saved data
 		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences( context );
 		String type = mSharedPreferences.getString("settings_server_type", "-1");
@@ -58,13 +56,7 @@ public class SettingsModel {
 		serverAddress = mSharedPreferences.getString("settings_server_address", null);
 		midiDevice = mSharedPreferences.getString("settings_midi_out", null);
 		layoutFile = mSharedPreferences.getString("settings_layout_file", null);
-		sensorsEnabled = mSharedPreferences.getBoolean("settings_sensors_enable", false);
 
-		if (sensorsEnabled)
-			((FingerPlayActivity)this.context).startSensors();
-		else
-			((FingerPlayActivity)this.context).stopSensors();
-		
         if (serverType != -1)
         	ConnectionManager.getInstance().setConnection( serverType );
 	}
@@ -108,15 +100,6 @@ public class SettingsModel {
 
 	public void setLayoutFile(String value) {
 		layoutFile = value;
-		updateView();
-	}
-	
-	public void setSensors(boolean value) {
-		if (value)
-			((FingerPlayActivity)this.context).startSensors();
-		else
-			((FingerPlayActivity)this.context).stopSensors();
-		sensorsEnabled = value;
 		updateView();
 	}
 	

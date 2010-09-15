@@ -192,7 +192,7 @@ public class FingerServerConnection extends Connection implements IReceiver {
 
 	}
 
-
+/*
     // Create runnable for posting results from connect()
     final Runnable mDispatchSocketReadEvent = new Runnable() {
         public void run() {
@@ -201,7 +201,7 @@ public class FingerServerConnection extends Connection implements IReceiver {
         	//Log.i("sc", "ServerConnection read something!");
         }
     };
-
+*/
     final Runnable mSocketDisconnected = new Runnable() {
         public void run() {
         	if (listener != null)
