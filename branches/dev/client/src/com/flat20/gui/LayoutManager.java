@@ -12,8 +12,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.util.Log;
+
 import com.flat20.fingerplay.midicontrollers.IMidiController;
+import com.flat20.fingerplay.midicontrollers.MidiController;
+import com.flat20.fingerplay.midicontrollers.Parameter;
 import com.flat20.gui.widgets.Pad;
+import com.flat20.gui.widgets.SensorSlider;
+import com.flat20.gui.widgets.SensorXYPad;
 import com.flat20.gui.widgets.Slider;
 import com.flat20.gui.widgets.Widget;
 import com.flat20.gui.widgets.WidgetContainer;
@@ -21,6 +27,10 @@ import com.flat20.gui.widgets.XYPad;
 
 /**
  * TODO Move to GUI project.
+ *
+ * The resulting wc needs to go to NavigationOverlay but best would be to parse
+ * the xml in to a data format and parse that into both MidiControllers
+ * AND widgets. 
  * 
  * @author andreas
  *
@@ -78,7 +88,6 @@ public class LayoutManager {
 						}
 					}
 				}
-			} else {
 			}
 
 			parseLayout(mainContainer, layout, width, height);
@@ -93,8 +102,6 @@ public class LayoutManager {
 		int numTouchPads = 0;
 		int numSliders = 0;
 		int numButtons = 0;
-		int numSensorsThreeaxis = 0;
-		int numSensorsSimple = 0;
 
 		float deltaWidth = androidWidth / (float)getIntegerAttribute(layout, "screenWidth");
 		float deltaHeight = androidHeight / (float)getIntegerAttribute(layout, "screenHeight");
@@ -102,10 +109,13 @@ public class LayoutManager {
 		NodeList screens = layout.getElementsByTagName("screen");
 
 		// Loop through all screens and add any widgets to the WidgetContainer.
-		// A bit of a mix between view and data here.  
-		for (int s = 0; s < screens.getLength(); s++) {
-
+		// A bit of a mix between view and data here.
+		final int length = screens.getLength();
+		for (int s = 0; s < length; s++) {
+			
 			if (screens.item(s).getNodeType() == Node.ELEMENT_NODE) {
+
+				Log.i("LayoutManager", "TODO Not reading default values from XML. screen " + s);
 
 				Element screenElement = (Element) screens.item(s);
 
@@ -118,7 +128,8 @@ public class LayoutManager {
 				wc.y = screenY;
 
 				NodeList widgets = screenElement.getChildNodes();
-				for (int e = 0; e < widgets.getLength(); e++) {
+				final int wlength =  widgets.getLength();
+				for (int e = 0; e < wlength; e++) {
 
 					if (widgets.item(e).getNodeType() == Node.ELEMENT_NODE) {
 
@@ -129,47 +140,136 @@ public class LayoutManager {
 						int widgetY = (int)(getIntegerAttribute(widgetElement, "y")*deltaHeight);
 						int widgetWidth = (int)(getIntegerAttribute(widgetElement, "width")*deltaWidth);
 						int widgetHeight = (int)(getIntegerAttribute(widgetElement, "height")*deltaHeight);
-						System.out.println(" ?? " + widgetElement.getAttribute("controllerNumber"));
 						int widgetControllerNumber = getIntegerAttribute(widgetElement, "controllerNumber", IMidiController.CONTROLLER_NUMBER_UNASSIGNED);
 
-						System.out.println(name + ": " + widgetControllerNumber);
-
+						MidiController mc = new MidiController();
 						Widget widget = null;
 						if (name.equals("button") || name.equals("pad")) {
-							widget = new Pad("Button " + (++numButtons), widgetControllerNumber);
+							mc.setName( "Button " + (++numButtons) );
+							Parameter parameters[] = {
+									new Parameter(0, 0, widgetControllerNumber+0, "Press", Parameter.TYPE_NOTE, false)
+									};
+							mc.setParameters( parameters );
+							widget = new Pad(mc);//"Button " + (++numButtons), widgetControllerNumber);
 
 						} else if (name.equals("slider")) {
-							widget = new Slider("Slider " + (++numSliders), widgetControllerNumber);
+							mc.setName( "Slider " + (++numSliders) );
+
+							Parameter parameters[] = {
+									new Parameter(0, 0, widgetControllerNumber+0, "Press", Parameter.TYPE_NOTE, true),
+									new Parameter(1, 0, widgetControllerNumber+1, "Vertical", Parameter.TYPE_CONTROL_CHANGE, true)
+									};
+							mc.setParameters(parameters);
+							widget = new Slider(mc);//"Slider " + (++numSliders), widgetControllerNumber);
 
 						} else if (name.equals("touchpad") || name.equals("xypad")) {
-							widget = new XYPad("XY Pad " + (++numTouchPads), widgetControllerNumber);
-							//System.out.println("screen.addWidget( new Touchpad() ); " + numTouchPads);
+							mc.setName( "XY Pad " + (++numTouchPads) );
+							Parameter parameters[] = {
+									new Parameter(0, 0, widgetControllerNumber+0, "Press", Parameter.TYPE_CONTROL_CHANGE, true),
+									new Parameter(1, 0, widgetControllerNumber+1, "Horizontal", Parameter.TYPE_CONTROL_CHANGE, true),
+									new Parameter(2, 0, widgetControllerNumber+2, "Vertical", Parameter.TYPE_CONTROL_CHANGE, true)
+									};
+							mc.setParameters(parameters);
+							widget = new XYPad(mc);//"XY Pad " + (++numTouchPads), widgetControllerNumber);
 						}
 						else if (name.equals("accelerometer") 
 								|| name.equals("orientation") 
 								|| name.equals("magfield")
 								|| name.equals("gyroscope")) {	//3-axis
-							widget = new XYPad("Sensor " + name, widgetControllerNumber);
-							//System.out.println("screen.addWidget( new Touchpad() ); " + numTouchPads);
+							mc.setName( "Sensor " + name + " " + (++numTouchPads) );
+							Parameter parameters[] = {
+									new Parameter(0, 0, widgetControllerNumber+0, "Press", Parameter.TYPE_CONTROL_CHANGE, true),
+									new Parameter(1, 0, widgetControllerNumber+1, "Horizontal", Parameter.TYPE_CONTROL_CHANGE, true),
+									new Parameter(2, 0, widgetControllerNumber+2, "Vertical", Parameter.TYPE_CONTROL_CHANGE, true)
+									};
+							mc.setParameters(parameters);
+							widget = new SensorXYPad( mc );
+							//widget = new XYPad("Sensor " + name, widgetControllerNumber);
 						}
 						else if (name.equals("light")
 								|| name.equals("pressure")
 								|| name.equals("proximity")
 								|| name.equals("temperature")) {	//single value
-							widget = new Slider("Sensor " + name, widgetControllerNumber);
-							//System.out.println("screen.addWidget( new Slider() ); " + numSliders);
+							mc.setName( "Sensor " + name + " " + (++numSliders) );
+
+							Parameter parameters[] = {
+									new Parameter(0, 0, widgetControllerNumber+0, "Press", Parameter.TYPE_NOTE, false),
+									new Parameter(1, 0, widgetControllerNumber+1, "Vertical", Parameter.TYPE_CONTROL_CHANGE, true)
+									};
+							mc.setParameters(parameters);
+							widget = new SensorSlider(mc);//"Slider " + (++numSliders), widgetControllerNumber);
 						}
+
 						if (widget != null) {
 							widget.x = widgetX;
 							widget.y = widgetY;
 							widget.setSize(widgetWidth, widgetHeight);
 							wc.addSprite(widget);
+
+							// Load any XML parameters
+							updateParameters(mc, widgetElement);
 						}
 					}
 				}
 
 				mainContainer.addSprite( wc );
 
+			}
+		}
+
+	}
+
+	
+	// 
+	/**
+	 * Overrides the default parameters for any controller.
+	 * 
+	 */
+	protected static void updateParameters(IMidiController midiController, Element widgetElement) {
+
+		//ArrayList<Parameter> parsedParameters = new ArrayList<Parameter>();
+		NodeList parameters = widgetElement.getChildNodes();
+
+		final int length = parameters.getLength();
+		for (int e = 0; e < length; e++) {
+
+			if (parameters.item(e).getNodeType() == Node.ELEMENT_NODE) {
+
+				Element parameterElement = (Element) parameters.item(e);
+				String name = parameterElement.getNodeName();
+
+				if (name.equals("parameter")) {
+
+					int parameterId = getIntegerAttribute(parameterElement, "id", -1);
+					int channel = getIntegerAttribute(parameterElement, "channel", -1);
+					int controllerNumber = getIntegerAttribute(parameterElement, "controllerNumber", -1);
+					String parameterName = getStringAttribute(parameterElement, "name", null);
+					String parameterTypeText = getStringAttribute(parameterElement, "type", null);
+
+					Parameter parameter = midiController.getParameters()[parameterId];
+
+					//if (parameterId != -1)
+						//parameter.i = controllerNumber;
+
+					if (parameterName != null)
+						parameter.name = parameterName;
+
+					if (channel != -1)
+						parameter.channel = channel;
+
+					if (controllerNumber != -1)
+						parameter.controllerNumber = controllerNumber;
+					
+					if (parameterTypeText != null) {
+						if ("controlChange".equals(parameterTypeText)) {
+							parameter.type = Parameter.TYPE_CONTROL_CHANGE;
+						} else if ("note".equals(parameterTypeText)) {
+							parameter.type = Parameter.TYPE_NOTE;
+						}
+					}
+
+
+				}
 			}
 		}
 
@@ -188,6 +288,17 @@ public class LayoutManager {
 				result = Integer.parseInt( element.getAttribute(attributeName) );
 		} catch (Exception e) {
 		}
+
+		return result;
+	}
+
+	protected static String getStringAttribute(Element element, String attributeName, String defaultValue) {
+		String result = defaultValue;
+
+		if (element.hasAttribute(attributeName))
+			result = element.getAttribute(attributeName);
+		if (result == null)
+			result = defaultValue;
 
 		return result;
 	}
