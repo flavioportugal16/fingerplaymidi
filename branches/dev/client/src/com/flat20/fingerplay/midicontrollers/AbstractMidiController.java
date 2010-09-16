@@ -33,7 +33,7 @@ public abstract class AbstractMidiController implements IMidiController {
 	public Parameter[] getParameters() {
 		return mParameters;
 	}
-	
+
 	@Override
 	public void setParameters(Parameter[] parameters) {
 		mParameters = parameters;
@@ -107,4 +107,11 @@ public abstract class AbstractMidiController implements IMidiController {
     	mListener = l;
     }
 
+	public String toString() {
+		String result = this.mName + "\n";
+		for (int i=0; i<mParameters.length; i++) {
+			result += mParameters[i] + "\n";
+		}
+		return result;
+	}
 }

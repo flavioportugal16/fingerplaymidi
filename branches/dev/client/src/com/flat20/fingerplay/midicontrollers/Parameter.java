@@ -23,4 +23,12 @@ public class Parameter {
 		this.type = type;
 		this.visible = visible;
 	}
+
+	public Parameter clone() {
+		return new Parameter(id, channel, controllerNumber, name, type, visible);
+	}
+
+	public String toString() {
+		return "Parameter id: " + id + ", channel: " + channel + ", controllerNumber: " + controllerNumber + ", name: " + name + ", type: " + type + ", visible: " + visible;
+	}
 }
