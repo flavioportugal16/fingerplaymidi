@@ -27,6 +27,17 @@
 		<pad class="com.flat20.gui.widgets.Pad">
 			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="note" visible="false" />
 		</pad>
+
+		<!-- Sensor controllers are being worked on -->
+		<xypad class="com.flat20.gui.widgets.SensorXYPad">
+			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="controlChange" visible="true" />
+			<parameter id="1" channel="0" controllerNumber="0" name="Horizontal" type="controlChange" visible="true" />
+			<parameter id="2" channel="0" controllerNumber="0" name="Vertical" type="controlChange" visible="true" />
+		</xypad>
+		<slider class="com.flat20.gui.widgets.SensorSlider">
+			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="controlChange" visible="true" />
+			<parameter id="1" channel="0" controllerNumber="0" name="Vertical" type="controlChange" visible="true" />
+		</slider>
 	</defaults>
 
 	<!--
@@ -51,7 +62,8 @@
 			<!--
 				An xypad using the default MIDI channel and controllerNumber 4,5 and 6.
 				FingerPlay automatically adds the parameter ID to the base controllerNumber 
-				if the parameters are omitted. It makes the XML a bit cleaner. 
+				IF controllerNumber is defined on the XML element and the parameters 
+				are omitted. 
 			 -->
 			<xypad x="216" y="68" width="184" height="184" controllerNumber="4" />
 
@@ -139,13 +151,13 @@
 		</screen>
 
 		<screen x="0" y="1442" width="854" height="478">
-			<orientation x="245" y="250" width="200" height="200"/>
-			<accelerometer x="245" y="6" width="200" height="200"/>
-			<magfield x="5" y="250" width="200" height="200"/>
-			<light x="5" y="16" width="42" height="200"/>
-			<pressure x="55" y="16" width="42" height="200"/>
-			<proximity x="105" y="16" width="42" height="200"/>
-			<temperature x="155" y="16" width="42" height="200"/>
+			<orientation x="245" y="250" width="250" height="200" controllerNumber="35" />
+			<accelerometer x="245" y="6" width="200" height="200" controllerNumber="38" />
+			<magfield x="5" y="250" width="200" height="200" controllerNumber="41" />
+			<light x="5" y="16" width="42" height="200" controllerNumber="44" />
+			<pressure x="55" y="16" width="42" height="200" controllerNumber="46" />
+			<proximity x="105" y="16" width="42" height="200" controllerNumber="48" />
+			<temperature x="155" y="16" width="42" height="200" controllerNumber="50" />
 		</screen>
 
 	</layout>

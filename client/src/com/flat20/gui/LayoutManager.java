@@ -106,6 +106,7 @@ public class LayoutManager {
 					};
 			defaultParameters.put("xypad", parameters);
 
+			
 			// Get controller defaults
 			NodeList defaults = doc.getElementsByTagName("defaults");
 			for (int l = 0; l < defaults.getLength(); l++) {
@@ -119,9 +120,11 @@ public class LayoutManager {
 							Element controller = (Element) controllers.item(i);
 
 							String name = controller.getNodeName();
-							String widgetClass = getStringAttribute(controller, "class", null);
+							//String widgetClass = getStringAttribute(controller, "class", null);
 
-							System.out.println(name + " class = " + widgetClass);
+							// TODO Create the widget based on the class name.
+
+							//System.out.println(name + " class = " + widgetClass);
 							/*
 							if (widgetClass != null) {
 								try {
@@ -269,13 +272,9 @@ public class LayoutManager {
 								|| name.equals("orientation") 
 								|| name.equals("magfield")
 								|| name.equals("gyroscope")) {	//3-axis
-							mc.setName( "Sensor " + name + " " + (++numTouchPads) );
-
+							mc.setName( "Sensor " + name );// + " " + (++numTouchPads) );
+ 
 							Parameter[] parameters = cloneParameters(defaultParameters.get("xypad"));
-							/*
-							for (int i=0; i<parameters.length; i++) {
-								parameters[i].controllerNumber = autoControllerNumber++;
-							}*/
 
 							mc.setParameters( parameters );
 							widget = new SensorXYPad( mc );
@@ -285,18 +284,14 @@ public class LayoutManager {
 								|| name.equals("pressure")
 								|| name.equals("proximity")
 								|| name.equals("temperature")) {	//single value
-							mc.setName( "Sensor " + name + " " + (++numSliders) );
+							mc.setName( "Sensor " + name);// + " " + (++numSliders) );
 
 							Parameter[] parameters = cloneParameters(defaultParameters.get("slider"));
-							/*
-							for (int i=0; i<parameters.length; i++) {
-								parameters[i].controllerNumber = autoControllerNumber++;
-							}*/
 
 							mc.setParameters( parameters );
 							widget = new SensorSlider(mc);//"Slider " + (++numSliders), widgetControllerNumber);
 						}
-
+ 
 						if (widget != null) {
 							widget.x = widgetX;
 							widget.y = widgetY;
@@ -305,6 +300,7 @@ public class LayoutManager {
 
 							// Load any XML parameters
 							updateParameters(mc.getParameters(), widgetElement);
+							System.out.println(mc);
 
 						}
 					}

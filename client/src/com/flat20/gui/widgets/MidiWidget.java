@@ -21,6 +21,7 @@ public abstract class MidiWidget extends Widget { //implements IMidiController {
 		super();
 
 		mMidiController = midiController;
+		mMidiController.setView(this);
 
 		//setName(name);
 		//setControllerNumber(controllerNumber);

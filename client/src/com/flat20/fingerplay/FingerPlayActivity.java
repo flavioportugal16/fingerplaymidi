@@ -1,5 +1,6 @@
 package com.flat20.fingerplay;
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,16 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
     private Logo mLogo;
  
     private NavigationOverlay mNavigationOverlay; 
- 
+
+
+    // Sensor properties.
+    // TODO Move to a separate class.
+
+    public SensorManager sensorManager;
+    private List<Sensor> sensors = new ArrayList<Sensor>();
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -54,13 +64,13 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
         Toast info = Toast.makeText(this, "Go to http://thesundancekid.net/ for help.", Toast.LENGTH_LONG);
         info.show();
 
-        
         // Sensor code
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-
         sensors = new ArrayList<Sensor>(sensorManager.getSensorList(Sensor.TYPE_ALL));
+        startSensors();
      
 
+        
         
         // Simple splash animation
 
@@ -115,8 +125,6 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
         
         
         
-        // TODO Where?
-        startSensors();
 	}
 /*
 	@Override
@@ -158,23 +166,18 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 	}
 
 
-	// Sensor code
-	
-    public SensorManager sensorManager;
-
-    private List<Sensor> sensors = new ArrayList<Sensor>();
-
-
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		//Log.d("ACCU", String.format("onAccuracyChanged  sensor: %d   accuraccy: %d", sensor, accuracy));
 	}
 
     // Not calling start/stop on MidiControllerManager anymore. Activity won't get
-    // a onSensorChanged call unless we've registered a listener for it.
+    // a onSensorChanged call unless we've registered a listener for it anyway.
 	public boolean startSensors() {
 		boolean retval = true;
-		for (int i = 0; i < sensors.size(); i++)
-			retval = retval && sensorManager.registerListener(this, sensors.get(i), SensorManager.SENSOR_DELAY_UI);
+		for (int i = 0; i < sensors.size(); i++) {
+			boolean res = sensorManager.registerListener(this, sensors.get(i), SensorManager.SENSOR_DELAY_UI);
+			retval = retval && res;
+		}
 		return retval;
 	}
 
@@ -184,7 +187,7 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 	}
 
 	public void onSensorChanged(SensorEvent e) {
-		//float[] values = e.values;
+
 /*
   		int sensorReporting = e.sensor.getType();
 		String str = "Sensor " + sensorReporting + " changed: ";

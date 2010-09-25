@@ -1,5 +1,7 @@
 package com.flat20.fingerplay.midicontrollers;
 
+import com.flat20.gui.widgets.MidiWidget;
+
 public interface IMidiController {
 
 	final public static int CONTROLLER_NUMBER_UNASSIGNED = -1;
@@ -27,4 +29,7 @@ public interface IMidiController {
 	public void setOnControlChangeListener(IOnControlChangeListener l);
 	//public void setHold(boolean hold);
 	//public boolean isHolding();
+
+	public void setView(MidiWidget widget);
+	public MidiWidget getView();
 }
