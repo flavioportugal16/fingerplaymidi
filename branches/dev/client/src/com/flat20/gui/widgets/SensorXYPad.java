@@ -3,7 +3,6 @@ package com.flat20.gui.widgets;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
-
 import com.flat20.fingerplay.midicontrollers.IMidiController;
 
 // TODO Register sensor listener inside this class?
@@ -45,6 +44,8 @@ public class SensorXYPad extends XYPad {
 		switch (sensor.getType()) {
 
 			case Sensor.TYPE_ACCELEROMETER:	//A constant describing a light sensor type.
+
+				
 				/*
 				values[0]: Acceleration minus Gx on the x-axis 
 				values[1]: Acceleration minus Gy on the y-axis 
@@ -59,7 +60,7 @@ public class SensorXYPad extends XYPad {
 					val[0] = (sensorValues[0] + max) / (2 * max);
 					val[1] = (sensorValues[1] + max) / (2 * max);
 					val[2] = (sensorValues[2] + max - SensorManager.STANDARD_GRAVITY) / (2 * max);	//TODO Futureproof me ;)
-
+					
 					setMeterX((int)(val[0]*width));
 					setMeterY((int)(val[1]*height));
 
@@ -80,8 +81,8 @@ public class SensorXYPad extends XYPad {
 					val[1] = (sensorValues[1]+max)/(2*max);
 					val[2] = (sensorValues[2]+max)/(2*max);
 					
-					setMeterX((int)(val[2]*width));
-					setMeterX((int)(val[1]*height));
+					setMeterX((int)(val[1]*width));
+					setMeterX((int)(val[2]*height));
 					
 					getMidiController().sendParameter(CC_TOUCH, (int)(val[0]*0x7F));
 					getMidiController().sendParameter(CC_X, (int)(val[1]*0x7F));
@@ -96,17 +97,17 @@ public class SensorXYPad extends XYPad {
 							values[1]: Pitch, rotation around X axis (-180 to 180), with positive values when the z-axis moves toward the y-axis. 
 							values[2]: Roll, rotation around Y axis (-90 to 90), with positive values when the x-axis moves away from the z-axis.
 				*/
-
+				
 				//Stop sensor update flooding
 				if (SystemClock.uptimeMillis() > mLastSendTime + SEND_DELAY)
 		    	{
 					//scale to 0..1 range:
 					val[0] = sensorValues[0]/359.0f;
-					val[1] = (sensorValues[1]+180.0f)/359.0f;
-					val[2] = (sensorValues[2]+90.0f)/180.0f;
-
-					setMeterX((int)(val[2]*width));
-					setMeterY((int)(val[1]*height));
+					val[1] = (359.0f-(sensorValues[1]+180.0f))/359.0f; // Flip upside down because it looks nicer
+					val[2] = (180.0f-(sensorValues[2]+90.0f))/180.0f; // and the user expects low values bottom left.
+					
+					setMeterX((int)(val[1]*width));
+					setMeterY((int)(val[2]*height));
 
 					getMidiController().sendParameter(CC_TOUCH, (int)(val[0]*0x7F));
 					getMidiController().sendParameter(CC_X, (int)(val[1]*0x7F));

@@ -33,7 +33,7 @@ import android.util.Log;
 public class FingerServerConnection extends Connection implements IReceiver {
 
 	private final static int READ_TIMEOUT = 1000;
-	private final static int CONNECT_TIMEOUT = 10000;
+	private final static int CONNECT_TIMEOUT = 5000;
 
 	//private static final String MULTICAST_SERVERIP = "230.0.0.1";
 	//private static final int MULTICAST_SERVERPORT = 9013;
@@ -115,7 +115,8 @@ public class FingerServerConnection extends Connection implements IReceiver {
 			socket.setTcpNoDelay(true);
 			InetSocketAddress remoteAddr = new InetSocketAddress(server, port);
 
-			socket.connect(remoteAddr, CONNECT_TIMEOUT); // was 2000
+			socket.connect(remoteAddr, CONNECT_TIMEOUT);
+
 			try {
 				out = new DataOutputStream( socket.getOutputStream() );
 				in = new DataInputStream( socket.getInputStream() );
@@ -135,11 +136,11 @@ public class FingerServerConnection extends Connection implements IReceiver {
 			}
 		} catch (SocketException e) {
 			socket = null;
-			Log.e("TCP", "Socket" + e);
+			Log.e("TCP", "Socket", e);
 			throw new ConnectException(e.toString());
 		} catch (Exception e) {
 			socket = null;
-			//Log.e("TCP", "C", e);
+			Log.e("TCP", "C", e);
 			throw new ConnectException(e.toString());
 		}
 	}
@@ -166,7 +167,8 @@ public class FingerServerConnection extends Connection implements IReceiver {
 			try {
 				mWriter.write(socketCommand);
 			} catch (Exception e) {
-				Log.e("FingerserverConnection", e.toString());
+				Log.e("FingerServerConnection", e.toString());
+				disconnect();
 			}
 			/*
 			try {
@@ -183,6 +185,17 @@ public class FingerServerConnection extends Connection implements IReceiver {
 			if (isConnected()) {
 				mReadThread.setRunning(false);
 				socket.close();
+				
+				mReader = null;
+				mWriter = null;
+				
+				if (in != null)
+					in.close();
+				in = null;
+				
+				if (out != null)
+					out.close();
+				out = null;
 			}
 		} catch (IOException e) {
 			

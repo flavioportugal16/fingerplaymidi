@@ -1,5 +1,7 @@
 package com.flat20.fingerplay.midicontrollers;
 
+import com.flat20.gui.widgets.MidiWidget;
+
 public abstract class AbstractMidiController implements IMidiController {
 
 	//private int mControllerNumber = CONTROLLER_NUMBER_UNASSIGNED;
@@ -7,6 +9,9 @@ public abstract class AbstractMidiController implements IMidiController {
 	private Parameter[] mParameters = null;
 
 	private IOnControlChangeListener mListener = null;
+	
+	// The MidiWidget this controller belongs to.
+	private MidiWidget mView = null;
 /*
 	@Override
 	public int getControllerNumber() {
@@ -106,6 +111,15 @@ public abstract class AbstractMidiController implements IMidiController {
     public void setOnControlChangeListener(IOnControlChangeListener l) {
     	mListener = l;
     }
+
+	@Override
+	public void setView(MidiWidget widget) {
+		mView = widget;
+	}
+
+	public MidiWidget getView() {
+		return mView;
+	}
 
 	public String toString() {
 		String result = this.mName + "\n";
