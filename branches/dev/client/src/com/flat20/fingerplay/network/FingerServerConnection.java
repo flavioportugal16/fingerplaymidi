@@ -115,6 +115,7 @@ public class FingerServerConnection extends Connection implements IReceiver {
 			socket.setTcpNoDelay(true);
 			InetSocketAddress remoteAddr = new InetSocketAddress(server, port);
 
+			Log.i("FingerServerConnection", "Connecting to " + remoteAddr.toString());
 			socket.connect(remoteAddr, CONNECT_TIMEOUT);
 
 			try {

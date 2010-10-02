@@ -68,10 +68,8 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         sensors = new ArrayList<Sensor>(sensorManager.getSensorList(Sensor.TYPE_ALL));
         startSensors();
-     
 
-        
-        
+
         // Simple splash animation
 
         Splash navSplash = new Splash(mNavigationOverlay, 64, 30, mWidth, mNavigationOverlay.x);

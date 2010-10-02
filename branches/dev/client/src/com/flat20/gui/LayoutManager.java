@@ -27,10 +27,14 @@ import com.flat20.gui.widgets.XYPad;
 
 /**
  * TODO Move to GUI project.
+ * TODO Refactor completely. There are far better ways to parse XML.
  *
- * The resulting wc needs to go to NavigationOverlay but best would be to parse
- * the xml in to a data format and parse that into both MidiControllers
- * AND widgets. 
+ * I created two parseLayout functions for version 1 and version 2 of the XML files.
+ * TODO Get rid of version 1
+ * 
+ * The resulting WidgetContainer needs to go to NavigationOverlay but best 
+ * would be to parse the XML in to a data format and parse that into both 
+ * MidiControllers AND widgets. 
  * 
  * @author andreas
  *
@@ -106,6 +110,13 @@ public class LayoutManager {
 					};
 			defaultParameters.put("xypad", parameters);
 
+			int version = 1;
+			try {
+				version = Integer.parseInt( root.getAttribute("version") );
+			} catch (Exception e) {
+			}
+
+			System.out.println("Layout version " + version);
 			
 			// Get controller defaults
 			NodeList defaults = doc.getElementsByTagName("defaults");
@@ -135,12 +146,7 @@ public class LayoutManager {
 
 									Widget widget = (Widget) WidgetClass.newInstance();
 
-									//Class WidgetClass = LayoutManager.class.getClassLoader().loadClass(widgetClass);
-									//Widget widget = (Widget) WidgetClass.newInstance();
-									//WidgetClass.getClassLoader().loadClass(widgetClass);
-									//WidgetClass.newInstance();
 									System.out.println(widget);
-									//WidgetClass.cast(obj)
 								} catch (Exception ex) {
 									ex.printStackTrace();
 								}
@@ -177,7 +183,10 @@ public class LayoutManager {
 				}
 			}
 
-			parseLayout(mainContainer, layout, width, height, defaultParameters);
+			if (version == 1)
+				parseLayoutV1(mainContainer, layout, width, height, defaultParameters);
+			else
+				parseLayoutV2(mainContainer, layout, width, height, defaultParameters);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -185,7 +194,109 @@ public class LayoutManager {
 		}
 	}
 
-	protected static void parseLayout(WidgetContainer mainContainer, Element layout, int androidWidth, int androidHeight, HashMap<String, Parameter[]> defaultParameters) {
+	protected static void parseLayoutV1(WidgetContainer mainContainer, Element layout, int androidWidth, int androidHeight, HashMap<String, Parameter[]> defaultParameters) {
+
+		int numTouchPads = 0;
+		int numSliders = 0;
+		int numButtons = 0;
+
+		float deltaWidth = androidWidth / (float)getIntegerAttribute(layout, "screenWidth");
+		float deltaHeight = androidHeight / (float)getIntegerAttribute(layout, "screenHeight");
+
+		NodeList screens = layout.getElementsByTagName("screen");
+
+		// V1 assigns controller numbers automatically.
+		int autoControllerNumber = 0;
+
+		// Loop through all screens and add any widgets to the WidgetContainer.
+		// A bit of a mix between view and data here.
+		final int length = screens.getLength();
+		for (int s = 0; s < length; s++) {
+			
+			if (screens.item(s).getNodeType() == Node.ELEMENT_NODE) {
+
+				Element screenElement = (Element) screens.item(s);
+
+				int screenX = (int) (getIntegerAttribute(screenElement, "x")*deltaWidth);
+				int screenY = (int) (getIntegerAttribute(screenElement, "y")*deltaHeight);
+				int screenWidth = (int) (getIntegerAttribute(screenElement, "width")*deltaWidth);
+				int screenHeight = (int) (getIntegerAttribute(screenElement, "height")*deltaHeight);
+				WidgetContainer wc = new WidgetContainer(screenWidth, screenHeight);
+				wc.x = screenX;
+				wc.y = screenY;
+
+				NodeList widgets = screenElement.getChildNodes();
+				final int wlength =  widgets.getLength();
+				for (int e = 0; e < wlength; e++) {
+
+					if (widgets.item(e).getNodeType() == Node.ELEMENT_NODE) {
+
+						Element widgetElement = (Element) widgets.item(e);
+						String name = widgetElement.getNodeName();
+
+						int widgetX = (int)(getIntegerAttribute(widgetElement, "x")*deltaWidth);
+						int widgetY = (int)(getIntegerAttribute(widgetElement, "y")*deltaHeight);
+						int widgetWidth = (int)(getIntegerAttribute(widgetElement, "width")*deltaWidth);
+						int widgetHeight = (int)(getIntegerAttribute(widgetElement, "height")*deltaHeight);
+
+						MidiController mc = new MidiController();
+						Widget widget = null;
+						if (name.equals("button") || name.equals("pad")) {
+							mc.setName( "Button " + (++numButtons) );
+
+							Parameter[] parameters = cloneParameters(defaultParameters.get("pad"));
+							for (int i=0; i<parameters.length; i++) {
+								parameters[i].controllerNumber = autoControllerNumber++;
+							}
+
+							mc.setParameters( parameters );
+							widget = new Pad(mc);//"Button " + (++numButtons), widgetControllerNumber);
+
+						} else if (name.equals("slider")) {
+							mc.setName( "Slider " + (++numSliders) );
+
+							Parameter[] parameters = cloneParameters(defaultParameters.get("slider"));
+							for (int i=0; i<parameters.length; i++) {
+								parameters[i].controllerNumber = autoControllerNumber++;
+							}
+
+							mc.setParameters( parameters );
+							widget = new Slider(mc);//"Slider " + (++numSliders), widgetControllerNumber);
+
+						} else if (name.equals("touchpad") || name.equals("xypad")) {
+							mc.setName( "XY Pad " + (++numTouchPads) );
+
+							Parameter[] parameters = cloneParameters(defaultParameters.get("xypad"));
+							for (int i=0; i<parameters.length; i++) {
+								parameters[i].controllerNumber = autoControllerNumber++;
+							}
+
+							mc.setParameters( parameters );
+							widget = new XYPad(mc);//"XY Pad " + (++numTouchPads), widgetControllerNumber);
+						}
+ 
+						if (widget != null) {
+							widget.x = widgetX;
+							widget.y = widgetY;
+							widget.setSize(widgetWidth, widgetHeight);
+							wc.addSprite(widget);
+
+							// Load any XML parameters
+							updateParameters(mc.getParameters(), widgetElement);
+							System.out.println(mc);
+
+						}
+					}
+				}
+
+				mainContainer.addSprite( wc );
+
+			}
+		}
+
+	}
+
+	protected static void parseLayoutV2(WidgetContainer mainContainer, Element layout, int androidWidth, int androidHeight, HashMap<String, Parameter[]> defaultParameters) {
 
 		int numTouchPads = 0;
 		int numSliders = 0;
@@ -228,7 +339,6 @@ public class LayoutManager {
 						int widgetY = (int)(getIntegerAttribute(widgetElement, "y")*deltaHeight);
 						int widgetWidth = (int)(getIntegerAttribute(widgetElement, "width")*deltaWidth);
 						int widgetHeight = (int)(getIntegerAttribute(widgetElement, "height")*deltaHeight);
-						//int widgetControllerNumber = getIntegerAttribute(widgetElement, "controllerNumber", IMidiController.CONTROLLER_NUMBER_UNASSIGNED);
 
 						MidiController mc = new MidiController();
 						Widget widget = null;
@@ -312,7 +422,6 @@ public class LayoutManager {
 		}
 
 	}
-
 	
 	// 
 	/**
