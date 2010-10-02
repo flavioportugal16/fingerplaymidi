@@ -18,7 +18,7 @@ public class Scrollbar extends Widget implements IScrollListener {
 	private MaterialSprite mThumbHighlight;
 
 	private IScrollable mTarget;
-	private int mVisibleArea; // the screen height for our fullscreen scroll.
+	private int mVisibleArea; // the screen height of the device or the app.
 
 	private int mScreenYs[];
 
@@ -147,12 +147,8 @@ public class Scrollbar extends Widget implements IScrollListener {
 			if (nearestScreenIndex != -1) {
 				snappedY = mScreenYs[nearestScreenIndex];
 
-				// TODO Update the thumb with the snapped value.
-				// Might look something like this:
-				//int screenY = (int)(snappedY / (float)mThumb.height);
-				//int scrollY = screenY*(mThumb.height+1);
-				//mThumbHighlight.y = mThumb.y = touchY;
-
+				float normalizedY = (float)snappedY / mTarget.getHeight();
+				mThumbHighlight.y = mThumb.y = (int)(normalizedY * this.height);
 			}
 
 		}
