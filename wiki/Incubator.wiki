@@ -6,3 +6,4 @@
     * Rotary knob
     * Custom widgets for sensors
   * Two-way communication (think motorized slides in hardware MIDI controllers)
+  * Ability to send new layouts from the server
