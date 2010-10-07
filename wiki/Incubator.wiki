@@ -1,6 +1,6 @@
 #summary Ideas for new features
 
-  * MIDI note for hardware keys
+  * MIDI note for hardware keys (have a look at http://code.google.com/p/remotedroid/ )
   * New widgets:
     * Color picker  
     * Rotary knob
