@@ -25,7 +25,7 @@ public class ConfigReader {
 	final private Document mXmlDoc;
 
 	// Version number found on the root <layouts> tag
-	private int mConfigFileVersion; 
+	private int mConfigFileVersion;
 
 	// HashMap with widget name and its default parameter values.
 	private HashMap<String, ConfigItemParameters> mDefaultParameters;
