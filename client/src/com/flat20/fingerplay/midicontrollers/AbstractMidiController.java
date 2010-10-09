@@ -1,8 +1,12 @@
 package com.flat20.fingerplay.midicontrollers;
 
+import java.util.HashMap;
+
+import com.flat20.fingerplay.ConfigItemParameters;
+import com.flat20.fingerplay.IConfigurable;
 import com.flat20.gui.widgets.MidiWidget;
 
-public abstract class AbstractMidiController implements IMidiController {
+public abstract class AbstractMidiController implements IMidiController, IConfigurable {
 
 	//private int mControllerNumber = CONTROLLER_NUMBER_UNASSIGNED;
 	private String mName = null;
@@ -38,11 +42,11 @@ public abstract class AbstractMidiController implements IMidiController {
 	public Parameter[] getParameters() {
 		return mParameters;
 	}
-
+/*
 	@Override
 	public void setParameters(Parameter[] parameters) {
 		mParameters = parameters;
-	}
+	}*/
 /*
 	@Override
 	public Parameter getParameterById(int parameterId) {
@@ -81,31 +85,6 @@ public abstract class AbstractMidiController implements IMidiController {
 				break;
 		}
 	}
-/*
-	@Override
-	public void sendControlChange(int controllerNumber, int value) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void sendNoteOff(int key, int velocity) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void sendNoteOn(int key, int velocity) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setHold(boolean hold) {
-		// TODO Auto-generated method stub
-
-	}
-*/
 
 	@Override
     public void setOnControlChangeListener(IOnControlChangeListener l) {
@@ -117,14 +96,48 @@ public abstract class AbstractMidiController implements IMidiController {
 		mView = widget;
 	}
 
+	@Override
 	public MidiWidget getView() {
 		return mView;
 	}
 
+
+	// IConfigurable
+
+	@Override
+	public void setParameters( ConfigItemParameters parameters) {
+
+		mParameters = new Parameter[parameters.data.size()];
+
+		for (HashMap<String, Object> map : parameters.data) {
+			System.out.println("AbstractMidiController::setParameters - map = " + map);
+
+			int id = Integer.parseInt((String)map.get("id"));
+			int channel = Integer.parseInt((String)map.get("channel"));
+			int controllerNumber = Integer.parseInt( (String)map.get("controllerNumber") );
+			String name = (String)map.get("name");
+			boolean visible = Boolean.parseBoolean( (String)map.get("visible") );
+			String stringType = (String)map.get("type");
+			int type = Parameter.TYPE_CONTROL_CHANGE;
+
+			if ("controlChange".equals(stringType)) {
+				type = Parameter.TYPE_CONTROL_CHANGE;
+			} else if ("note".equals(stringType)) {
+				type = Parameter.TYPE_NOTE;
+			}
+
+			Parameter param = new Parameter(id, channel, controllerNumber, name, type, visible);
+			mParameters[id] = param;
+		}
+
+	}
+
 	public String toString() {
-		String result = this.mName + "\n";
-		for (int i=0; i<mParameters.length; i++) {
-			result += mParameters[i] + "\n";
+		String result = this.mName + " Parameters:\n";
+		if (mParameters != null) {
+			for (int i=0; i<mParameters.length; i++) {
+				result += mParameters[i] + "\n";
+			}
 		}
 		return result;
 	}

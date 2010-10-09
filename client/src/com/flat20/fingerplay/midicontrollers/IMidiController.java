@@ -13,7 +13,7 @@ public interface IMidiController {
 
 	// Names (and indices) of all parameters belonging to this controller
 	public Parameter[] getParameters();
-	public void setParameters(Parameter[] parameters);
+	//public void setParameters(Parameter[] parameters);
 	//public Parameter getParameterById(int parameterId);
 
 	// MidiControllerManager assigns this number to keep the cc messages separate.  

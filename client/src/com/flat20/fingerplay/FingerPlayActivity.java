@@ -1,6 +1,5 @@
 package com.flat20.fingerplay;
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +11,11 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.sax.Element;
 import android.widget.Toast;
 
+import com.flat20.fingerplay.midicontrollers.IMidiController;
+import com.flat20.fingerplay.midicontrollers.MidiController;
 import com.flat20.fingerplay.midicontrollers.MidiControllerManager;
 import com.flat20.fingerplay.network.ConnectionManager;
 import com.flat20.fingerplay.settings.SettingsModel;
@@ -23,8 +25,16 @@ import com.flat20.gui.NavigationOverlay;
 import com.flat20.gui.animations.AnimationManager;
 import com.flat20.gui.animations.Splash;
 import com.flat20.gui.sprites.Logo;
+import com.flat20.gui.widgets.IWidget;
+import com.flat20.gui.widgets.MidiWidget;
 import com.flat20.gui.widgets.MidiWidgetContainer;
-import com.flat20.gui.LayoutManager;
+import com.flat20.gui.widgets.Pad;
+import com.flat20.gui.widgets.SensorSlider;
+import com.flat20.gui.widgets.SensorXYPad;
+import com.flat20.gui.widgets.Slider;
+import com.flat20.gui.widgets.Widget;
+import com.flat20.gui.widgets.WidgetContainer;
+import com.flat20.gui.widgets.XYPad;
 
 public class FingerPlayActivity extends InteractiveActivity implements SensorEventListener {
 
@@ -98,13 +108,133 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
         // TODO Make LayoutManager part of GUI lib
         File xmlFile = new File(Environment.getExternalStorageDirectory() + "/FingerPlayMIDI/" + mSettingsModel.layoutFile);
 
+        ConfigReader reader = null;
+        try {
+        	if (mSettingsModel.layoutFile != null && xmlFile != null) {
+    			reader = new ConfigReader( xmlFile );
+        	}
+		} catch (Exception e) {
+			// Tried loading and parsing file but failed. Most likely the file wasn't there.
+			System.out.println(e);
+		}
+
+		try {
+			if (reader == null)
+				reader = new ConfigReader( getApplicationContext().getResources().openRawResource(R.raw.layout_default) );
+		} catch (Exception e) {
+			// We won't have
+			e.printStackTrace();
+		}
+
+		try {
+			ConfigLayout layout = reader.selectLayout(mWidth, mHeight);
+			reader.parseLayout(layout); // Fills layout with info from the config file.
+
+			// Create Views for all items
+			// and assign a listener from the view to the controller
+
+			// Scale values if layout wasn't exactly the right size.
+    		float scaleX = mWidth / (float)layout.width;
+    		float scaleY = mHeight / (float)layout.height;
+
+    		for (ConfigScreen screen : layout.screens) {
+
+				int screenX = (int)(screen.x * scaleX);
+				int screenY = (int) (screen.y * scaleY);
+				int screenWidth = (int) (screen.width * scaleX);
+				int screenHeight = (int) (screen.height * scaleY);
+
+				WidgetContainer wc = new WidgetContainer(screenWidth, screenHeight);
+				wc.x = screenX;
+				wc.y = screenY;
+
+				System.out.println("Screen: ");
+
+	        	for (ConfigItem configItem : screen.items) {
+
+					String name = configItem.tagName;
+					Widget widget = null;
+
+					if (name.equals("button") || name.equals("pad")) {
+						widget = new Pad( (IMidiController) configItem.item );
+					} else if (name.equals("slider")) {
+						widget = new Slider( (IMidiController) configItem.item );
+
+					} else if (name.equals("touchpad") || name.equals("xypad")) {
+						widget = new XYPad( (IMidiController) configItem.item );
+					}
+					else if (name.equals("accelerometer") 
+							|| name.equals("orientation") 
+							|| name.equals("magfield")
+							|| name.equals("gyroscope")) {	//3-axis
+						widget = new SensorXYPad( (IMidiController) configItem.item );
+					}
+					else if (name.equals("light")
+							|| name.equals("pressure")
+							|| name.equals("proximity")
+							|| name.equals("temperature")) {	//single value
+						widget = new SensorSlider( (IMidiController) configItem.item );
+					}
+
+					if (widget != null) {
+
+						int widgetWidth = (int)(configItem.width * scaleX);
+						int widgetHeight = (int)(configItem.height * scaleY);
+
+						widget.x = (int)(configItem.x * scaleX);
+						widget.y = (int)(configItem.y * scaleY);
+						widget.setSize(widgetWidth, widgetHeight);
+						wc.addSprite(widget);
+
+						System.out.println("Added " + configItem.displayName);
+					}
+
+/*
+					Class<?> WidgetClass = Class.forName(widgetClass);
+					Class parameterTypes[] = new Class[] { IMidiController.class };
+					Constructor<?> ct = WidgetClass.getConstructor(parameterTypes);
+					Object argumentList[] = new Object[] { null };
+
+					Widget widget = (Widget) WidgetClass.newInstance();
+*/
+	        	}
+
+	        	mMidiWidgetsContainer.addSprite( wc );
+	        	System.out.println("added container");
+
+	        }
+
+
+			// Add all MIDI controllers to the MidiControllerManager
+	        for (ConfigScreen screen : layout.screens) {
+
+	        	for (ConfigItem configItem : screen.items) {
+	        		if (configItem.item instanceof IMidiController) {
+	        			IMidiController mc = (IMidiController) configItem.item;
+	        			mMidiControllerManager.addMidiController(mc);
+
+						//midiWidget.setOnControlChangeListener( onControlChangeListener );
+			        	//addMidiController( midiWidget.getMidiController() );
+
+	        		}
+	        	}
+	        }
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		
+        /*
+        
         if (xmlFile != null && xmlFile.canRead())
         	LayoutManager.loadXML(mMidiWidgetsContainer, xmlFile, mWidth, mHeight);
         else
         	LayoutManager.loadXML(mMidiWidgetsContainer, getApplicationContext().getResources().openRawResource(R.raw.layout_default), mWidth, mHeight);
-
+*/
         // Add all midi controllers to the manager
-        mMidiControllerManager.addMidiControllersIn(mMidiWidgetsContainer);
+        //mMidiControllerManager.addMidiControllersIn(mMidiWidgetsContainer);
 
         mRenderer.addSprite( mMidiWidgetsContainer );
  
