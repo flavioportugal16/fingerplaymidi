@@ -1,4 +1,4 @@
-package com.flat20.fingerplay;
+package com.flat20.fingerplay.config;
 
 import org.w3c.dom.Element;
 

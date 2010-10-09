@@ -1,19 +1,6 @@
-package com.flat20.fingerplay;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+package com.flat20.fingerplay.config;
 
 /**
-<xypad x="405" y="56" width="350" height="378" controllerNumber="3">
-	<parameter id="0" type="controlChange" />
-	<parameter id="1" type="controlChange" />
-	<parameter id="2" type="controlChange" />
-</xypad>
-[
-	["x":"405", "y":"56", ..],
-	["id":"1", "type":"controlChange"],
-	["id":"2", "type":"controlChange"],
-]
  * 
  * @author andreas.reuterberg
  *

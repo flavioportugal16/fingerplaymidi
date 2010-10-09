@@ -1,4 +1,4 @@
-package com.flat20.fingerplay;
+package com.flat20.fingerplay.config;
 
 import java.util.ArrayList;
 import java.util.HashMap;

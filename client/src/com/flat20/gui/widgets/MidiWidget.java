@@ -1,7 +1,6 @@
 package com.flat20.gui.widgets;
 
 import com.flat20.fingerplay.midicontrollers.IMidiController;
-import com.flat20.fingerplay.midicontrollers.IOnControlChangeListener;
 
 /**
  * IMidiController and AbstractMidiController deals with sending
