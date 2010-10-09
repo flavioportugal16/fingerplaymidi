@@ -4,7 +4,7 @@ public class Parameter {
 
 	// Send as MIDI control change or note on. 
 	final public static int TYPE_CONTROL_CHANGE = 1;
-	final public static int TYPE_NOTE = 2;
+	final public static int TYPE_NOTE = 2; //TODO TYPE_NOTE shouldn't exist, only NOTE_ON and NOTE_OFF
 	final public static int TYPE_NOTE_ON = 3;
 	final public static int TYPE_NOTE_OFF = 4;
 

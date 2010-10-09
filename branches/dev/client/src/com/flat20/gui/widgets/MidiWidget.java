@@ -42,13 +42,13 @@ public abstract class MidiWidget extends Widget { //implements IMidiController {
 	}
 
 
-
+/*
 	protected IOnControlChangeListener listener;
 
     public void setOnControlChangeListener(IOnControlChangeListener l) {
     	listener = l;
     }
-
+*/
     
 
 }

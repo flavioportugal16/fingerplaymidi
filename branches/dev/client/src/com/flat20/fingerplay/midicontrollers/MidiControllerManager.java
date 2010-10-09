@@ -55,7 +55,8 @@ public class MidiControllerManager {
 			midiController.setControllerNumber( mControllerIndex );
 */
     	mMidiControllers.put(midiController, Integer.valueOf(mControllerIndex));
-    	mControllerIndex += midiController.getParameters().length;
+    	if (midiController.getParameters() != null)
+    		mControllerIndex += midiController.getParameters().length;
     }
 
     public Set<IMidiController> getMidiControllers() {
@@ -96,7 +97,6 @@ public class MidiControllerManager {
         	IWidget w = widgets[i];
         	if (w instanceof MidiWidget) {
 				MidiWidget midiWidget = (MidiWidget) w;
-				midiWidget.setOnControlChangeListener( onControlChangeListener );
 	        	addMidiController( midiWidget.getMidiController() );
         	} else if (w instanceof WidgetContainer) {
 				WidgetContainer wc = (WidgetContainer) w;
@@ -114,26 +114,22 @@ public class MidiControllerManager {
 
 		@Override
     	public void onControlChange(IMidiController midiController, int channel, int controllerNumber, int value) {
-			//System.out.println("onControlChange " + 0xB0 + ", " + channel + ", " + controllerNumber + ", " + value);
+			System.out.println("onControlChange " + 0xB0 + ", " + channel + ", " + controllerNumber + ", " + value);
 			mControlChange.set(0xB0, channel, controllerNumber, value);
 			mConnectionManager.send( mControlChange );
     	}
-
+ 
     	@Override
     	public void onNoteOn(IMidiController midiController, int channel, int key, int velocity) {
-    		//System.out.println("onNoteOn " + channel + ", " + key + ", " + velocity);
-			//int controllerIndex = (int) getIndex(midiController);
+    		System.out.println("onNoteOn " + channel + ", " + key + ", " + velocity);
 			// midi channel, key, velocity
 			mNoteOn.set(channel, key, velocity);
-			//socketCommand = new MidiNoteOn(0, controllerIndex, velocity);
 			mConnectionManager.send( mNoteOn );
     	}
 
     	@Override
     	public void onNoteOff(IMidiController midiController, int channel, int key, int velocity) {
-    		//System.out.println("onNoteOff " + channel + ", " + key + ", " + velocity);
-			//int controllerIndex = (int) getIndex(midiController);
-			//socketCommand = new MidiNoteOff(0, controllerIndex, velocity);
+    		System.out.println("onNoteOff " + channel + ", " + key + ", " + velocity);
 			mNoteOff.set(channel, key, velocity);
 			mConnectionManager.send(mNoteOff);
     	}
