@@ -1,4 +1,4 @@
-package com.flat20.fingerplay;
+package com.flat20.fingerplay.config;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,7 @@ public class ConfigLayout {
 	public int ID;
 	
 	public ArrayList<ConfigScreen> screens = new ArrayList<ConfigScreen>();
-	int version;
-	int width;
-	int height;
+	public int version;
+	public int width;
+	public int height;
 }

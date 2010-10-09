@@ -1,4 +1,4 @@
-package com.flat20.fingerplay;
+package com.flat20.fingerplay.config;
 
 // config.WidgetItem? ConfigWidgetItem doesn't really specify if it is a MIDIController
 // what do we for labels?

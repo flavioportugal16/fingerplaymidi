@@ -1,8 +1,7 @@
-package com.flat20.fingerplay;
+package com.flat20.fingerplay.config;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,17 +13,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import android.util.Log;
-
 import com.flat20.fingerplay.midicontrollers.MidiController;
-import com.flat20.fingerplay.midicontrollers.Parameter;
-import com.flat20.gui.widgets.Pad;
-import com.flat20.gui.widgets.SensorSlider;
-import com.flat20.gui.widgets.SensorXYPad;
-import com.flat20.gui.widgets.Slider;
-import com.flat20.gui.widgets.Widget;
-import com.flat20.gui.widgets.WidgetContainer;
-import com.flat20.gui.widgets.XYPad;
 
 /**
  * Reads and parses layout XML files into ControllerInfo classes
@@ -128,7 +117,6 @@ public class ConfigReader {
 	 */
 	public void parseLayout(ConfigLayout configLayout) throws Exception {
 
-		System.out.println("***************");
 		// Get all layout tags and select the one specified by ConfigLayout ID.
 		NodeList layouts = mXmlDoc.getElementsByTagName("layout");
 		Element layout = (Element) layouts.item(configLayout.ID);
@@ -373,8 +361,6 @@ public class ConfigReader {
 
 					int id = Integer.parseInt((String)attributes.getNamedItem("id").getNodeValue());
 
-					System.out.println("<parameter id=" + id + "> numAttrs = " + attributes.getLength());
-
 					HashMap<String, Object> parameters = itemParameters.getParameterById(id);
 					if (parameters == null) {
 						parameters = new HashMap<String, Object>();
@@ -384,7 +370,6 @@ public class ConfigReader {
 					System.out.println("attributes length: " + attributes.getLength());
 					for (int a=0; a < attributes.getLength(); a++) {
 						Node node = attributes.item(a);
-						System.out.println("updating " + node.getNodeName() + " with: " + node.getNodeValue());
 						parameters.put(node.getNodeName(), node.getNodeValue());
 					}
 
