@@ -1,5 +1,6 @@
 package com.flat20.fingerplay;
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +14,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Toast;
 
-import com.flat20.fingerplay.config.ConfigItem;
-import com.flat20.fingerplay.config.ConfigLayout;
 import com.flat20.fingerplay.config.ConfigReader;
-import com.flat20.fingerplay.config.ConfigScreen;
-import com.flat20.fingerplay.midicontrollers.IMidiController;
+import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.midicontrollers.MidiControllerManager;
 import com.flat20.fingerplay.network.ConnectionManager;
 import com.flat20.fingerplay.settings.SettingsModel;

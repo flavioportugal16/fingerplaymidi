@@ -13,6 +13,10 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.flat20.fingerplay.config.dto.ConfigItem;
+import com.flat20.fingerplay.config.dto.ConfigItemParameters;
+import com.flat20.fingerplay.config.dto.ConfigLayout;
+import com.flat20.fingerplay.config.dto.ConfigScreen;
 import com.flat20.fingerplay.midicontrollers.MidiController;
 
 /**

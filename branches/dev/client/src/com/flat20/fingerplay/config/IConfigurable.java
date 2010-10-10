@@ -1,5 +1,7 @@
 package com.flat20.fingerplay.config;
 
+import com.flat20.fingerplay.config.dto.ConfigItemParameters;
+
 /**
  * 
  * @author andreas.reuterberg

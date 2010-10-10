@@ -2,21 +2,20 @@ package com.flat20.fingerplay.midicontrollers;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-
 import java.util.Set;
 
 import android.hardware.Sensor;
 import android.util.Log;
 
-import com.flat20.fingerplay.config.ConfigItem;
-import com.flat20.fingerplay.config.ConfigLayout;
-import com.flat20.fingerplay.config.ConfigScreen;
+import com.flat20.fingerplay.config.dto.ConfigItem;
+import com.flat20.fingerplay.config.dto.ConfigLayout;
+import com.flat20.fingerplay.config.dto.ConfigScreen;
 import com.flat20.fingerplay.network.ConnectionManager;
+import com.flat20.fingerplay.socket.commands.SocketCommand;
 import com.flat20.fingerplay.socket.commands.midi.MidiControlChange;
 import com.flat20.fingerplay.socket.commands.midi.MidiNoteOff;
 import com.flat20.fingerplay.socket.commands.midi.MidiNoteOn;
 import com.flat20.fingerplay.socket.commands.midi.MidiSocketCommand;
-import com.flat20.fingerplay.socket.commands.SocketCommand;
 import com.flat20.gui.widgets.IWidget;
 import com.flat20.gui.widgets.MidiWidget;
 import com.flat20.gui.widgets.SensorSlider;
