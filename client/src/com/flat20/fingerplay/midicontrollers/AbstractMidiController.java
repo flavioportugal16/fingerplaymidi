@@ -2,8 +2,8 @@ package com.flat20.fingerplay.midicontrollers;
 
 import java.util.HashMap;
 
-import com.flat20.fingerplay.config.ConfigItemParameters;
 import com.flat20.fingerplay.config.IConfigurable;
+import com.flat20.fingerplay.config.dto.ConfigItemParameters;
 import com.flat20.gui.widgets.MidiWidget;
 
 public abstract class AbstractMidiController implements IMidiController, IConfigurable {

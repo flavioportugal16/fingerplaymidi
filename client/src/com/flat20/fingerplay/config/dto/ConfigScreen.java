@@ -1,4 +1,4 @@
-package com.flat20.fingerplay.config;
+package com.flat20.fingerplay.config.dto;
 
 import java.util.ArrayList;
 

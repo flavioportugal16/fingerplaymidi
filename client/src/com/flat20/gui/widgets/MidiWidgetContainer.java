@@ -1,14 +1,12 @@
 package com.flat20.gui.widgets;
 
-import com.flat20.fingerplay.config.ConfigItem;
-import com.flat20.fingerplay.config.ConfigLayout;
-import com.flat20.fingerplay.config.ConfigScreen;
+import com.flat20.fingerplay.config.dto.ConfigItem;
+import com.flat20.fingerplay.config.dto.ConfigScreen;
 import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.gui.animations.Animation;
 import com.flat20.gui.animations.AnimationManager;
 import com.flat20.gui.animations.Slide;
 import com.flat20.gui.sprites.Sprite;
-import com.flat20.gui.widgets.IScrollListener;
 import com.flat20.gui.widgets.Scrollbar.IScrollable;
 
 /**
@@ -39,7 +37,7 @@ public class MidiWidgetContainer extends WidgetContainer implements IScrollable 
 		mSlide = new Slide(this, 0, y);
 	}
 
-	public void setConfigItems(ConfigLayout layout) {
+	public void setConfigItems(com.flat20.fingerplay.config.dto.ConfigLayout layout) {
 		// Scale values if layout wasn't exactly the right size.
 		float scaleX = mScreenWidth / (float)layout.width;
 		float scaleY = mScreenHeight / (float)layout.height;
