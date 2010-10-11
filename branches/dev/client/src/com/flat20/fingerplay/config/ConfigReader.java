@@ -2,6 +2,7 @@ package com.flat20.fingerplay.config;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -17,7 +18,7 @@ import com.flat20.fingerplay.config.dto.ConfigItem;
 import com.flat20.fingerplay.config.dto.ConfigItemParameters;
 import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.config.dto.ConfigScreen;
-import com.flat20.fingerplay.midicontrollers.MidiController;
+import com.flat20.fingerplay.midicontrollers.IMidiController;
 
 /**
  * Reads and parses layout XML files into ControllerInfo classes
@@ -31,8 +32,8 @@ public class ConfigReader {
 	// Version number found on the root <layouts> tag
 	private int mConfigFileVersion;
 
-	// HashMap with widget name and its default parameter values.
-	private HashMap<String, ConfigItemParameters> mDefaultParameters;
+	// HashMap with widget name and its default values. Gets cloned for each new Widget found.
+	private HashMap<String, ConfigItem> mDefaultItems;
 
 	// Where do we put these?
 	int numTouchPads = 0;
@@ -68,7 +69,52 @@ public class ConfigReader {
 		mConfigFileVersion = XMLUtils.getIntegerAttribute(root, "version", 1);
 
 		// Load all Widget definitions and their default settings.
-		mDefaultParameters = parseDefinitions();
+		mDefaultItems = parseDefinitions();
+	}
+
+	/**
+	 * Parses the 'defaults' tag, which we should rename to definitions.
+	 * 
+	 * @return
+	 */
+	private HashMap<String, ConfigItem> parseDefinitions() {
+		// Get all controller definitions and their default values
+
+		HashMap<String, ConfigItem> defaultParameters = new HashMap<String, ConfigItem>();
+
+		NodeList defaults = mXmlDoc.getElementsByTagName("defaults");
+		for (int l = 0; l < defaults.getLength(); l++) {
+			if (defaults.item(l).getNodeType() == Node.ELEMENT_NODE) {
+				Element tempDefault = (Element) defaults.item(l);
+
+				// loop through defaults/controllers
+				NodeList controllers = tempDefault.getChildNodes();
+				for (int i = 0; i < controllers.getLength(); i++) {
+					if (controllers.item(i).getNodeType() == Node.ELEMENT_NODE) {
+						Element controller = (Element) controllers.item(i);
+
+						ConfigItem defaultItem = new ConfigItem();
+						defaultItem.tagName = controller.getNodeName();
+						defaultItem.controllerClassName = XMLUtils.getStringAttribute(controller, "controller", null);
+						defaultItem.viewClassName = XMLUtils.getStringAttribute(controller, "view", null);
+						defaultItem.displayName = "Default";
+						defaultItem.parameters = new ConfigItemParameters();
+
+						// TODO Parse the default parameters and their values first from our hardcoded ones,
+						// and then from the XML. But to get hardcoded values from the class we'd need to load
+						// the class and loading isn't done in ConfigReader.
+
+						parseParameters(defaultItem, controller);
+
+						// Put it in a HashMap by tagName.
+						defaultParameters.put(defaultItem.tagName, defaultItem);
+					}
+				}
+			}
+		}
+
+		return defaultParameters;
+
 	}
 
 
@@ -150,8 +196,9 @@ public class ConfigReader {
 					if (widgets.item(e).getNodeType() == Node.ELEMENT_NODE) {
 
 						Element widgetElement = (Element) widgets.item(e);
-						ConfigItem configWidget = parseWidget(widgetElement);
-						configScreen.items.add(configWidget);
+						ConfigItem configItem = parseWidget(widgetElement);
+						configItem.item.setParameters(configItem.parameters);
+						configScreen.items.add(configItem);
 					}
 				}
 
@@ -162,148 +209,37 @@ public class ConfigReader {
 
 	}
 
-	private HashMap<String, ConfigItemParameters> parseDefinitions() {
-		// Get all controller definitions and their default values
-
-		HashMap<String, ConfigItemParameters> defaultParameters = new HashMap<String, ConfigItemParameters>();
-
-		NodeList defaults = mXmlDoc.getElementsByTagName("defaults");
-		for (int l = 0; l < defaults.getLength(); l++) {
-			if (defaults.item(l).getNodeType() == Node.ELEMENT_NODE) {
-				Element tempDefault = (Element) defaults.item(l);
-
-				// loop through defaults/controllers
-				NodeList controllers = tempDefault.getChildNodes();
-				for (int i = 0; i < controllers.getLength(); i++) {
-					if (controllers.item(i).getNodeType() == Node.ELEMENT_NODE) {
-						Element controller = (Element) controllers.item(i);
-
-						String name = controller.getNodeName();
-						//String widgetClass = getStringAttribute(controller, "class", null);
-
-						// TODO Create the widget based on the class name.
-
-						//System.out.println(name + " class = " + widgetClass);
-						/*
-						if (widgetClass != null) {
-							try {
-								Class<?> WidgetClass = Class.forName(widgetClass);
-								Class parameterTypes[] = new Class[] { IMidiController.class };
-								Constructor<?> ct = WidgetClass.getConstructor(parameterTypes);
-								Object argumentList[] = new Object[] { null };
-
-								Widget widget = (Widget) WidgetClass.newInstance();
-
-								System.out.println(widget);
-							} catch (Exception ex) {
-								ex.printStackTrace();
-							}
-						}
-							 */
-
-						ConfigItemParameters hardcoded = new ConfigItemParameters();
-						ConfigItemParameters parameters = parseParameters(controller, hardcoded);
-						//if (parameters != null) {
-							//System.out.println("Defaults for " + name);
-							///System.out.println(parameters);
-							
-							defaultParameters.put(name, parameters);
-							//updateParameters(parameters, controller);
-						//} else {
-							//Log.i("LayoutManager", "Couldn't find hardcoded defaults for " + name);
-						//}
-					}
-				}
-			}
-		}
-		
-		return defaultParameters;
-
-	}
-
 	/**
 	 * Parses an individual Widget XML tag in the layout and returns
-	 * a ConfigWidgetItem
+	 * a ConfigItem.
+	 * 
+	 * TODO Move class creation outside of ConfigReader.
 	 * 
 	 * @param widgetElement
 	 */
-	private ConfigItem parseWidget(Element widgetElement) {
+	private ConfigItem parseWidget(Element widgetElement) throws Exception {
+
 		String elementName = widgetElement.getNodeName();
-		String widgetName = null;
 
 		ConfigItem configWidget = null;
-		IConfigurable widget = null;
+		ConfigItem defaultItem = mDefaultItems.get(elementName);
 
-		//Widget widget = null;
-		if (elementName.equals("button") || elementName.equals("pad")) {
-			MidiController mc = new MidiController();
-			widgetName = "Button " + (++numButtons);
-			mc.setName( widgetName );
+		configWidget = defaultItem.clone();
 
-			//Parameter[] parameters = cloneParameters(defaultParameters.get("pad"));
 
-			//mc.setParameters( parameters );
-			widget = mc;//new Pad(mc);
+		if (configWidget != null) {
 
-		} else if (elementName.equals("slider")) {
-			MidiController mc = new MidiController();
-			widgetName =  "Slider " + (++numSliders);
-			mc.setName( widgetName );
+			// Creates controller class - Should be done by MidiControllerManager just like
+			// View is created outside of Config too.
+			Class<?> ControllerClass = Class.forName( configWidget.controllerClassName );
+			Class<?>[] classParams = new Class<?>[] {};
+			Object[] objectParams = new Object[] {};
+			Constructor<?> ctor = ControllerClass.getConstructor( classParams );
+			IConfigurable controller = (IConfigurable) ctor.newInstance( objectParams );
 
-			//Parameter[] parameters = cloneParameters(defaultParameters.get("slider"));
-
-			//mc.setParameters( parameters );
-			//widget = new Slider(mc);
-			widget = mc;
-
-		} else if (elementName.equals("touchpad") || elementName.equals("xypad")) {
-			MidiController mc = new MidiController();
-			widgetName = "XY Pad " + (++numTouchPads);
-			mc.setName( widgetName );
-
-			//Parameter[] parameters = cloneParameters(defaultParameters.get("xypad"));
-
-			//mc.setParameters( parameters );
-			//widget = new XYPad(mc);
-			widget = mc;
-		}
-		else if (elementName.equals("accelerometer") 
-				|| elementName.equals("orientation") 
-				|| elementName.equals("magfield")
-				|| elementName.equals("gyroscope")) {	//3-axis
-			MidiController mc = new MidiController();
-			widgetName = "Sensor " + elementName;
-			mc.setName( widgetName );
-
-			//Parameter[] parameters = cloneParameters(defaultParameters.get("xypad"));
-
-			//mc.setParameters( parameters );
-			//widget = new SensorXYPad( mc );
-			widget = mc;
-		}
-		else if (elementName.equals("light")
-				|| elementName.equals("pressure")
-				|| elementName.equals("proximity")
-				|| elementName.equals("temperature")) {	//single value
-			MidiController mc = new MidiController();
-			widgetName = "Sensor " + elementName;
-			mc.setName( widgetName );
-
-			//Parameter[] parameters = cloneParameters(defaultParameters.get("slider"));
-
-			//mc.setParameters( parameters );
-			//widget = new SensorSlider(mc);
-			widget = mc;
-
-		} else if (elementName.equals("label")) {
-			System.out.println("This is where we'd create a label widget..");
-		}
-
-		if (widget != null) {
-			configWidget = new ConfigItem();
-			configWidget.item = widget;
+			configWidget.item = controller;
 			configWidget.tagName = elementName;
-			configWidget.displayName = widgetName;
+			configWidget.displayName = elementName + " " + (++numButtons);
 			configWidget.x = XMLUtils.getIntegerAttribute(widgetElement, "x");
 			configWidget.y = XMLUtils.getIntegerAttribute(widgetElement, "y");
 			configWidget.width = XMLUtils.getIntegerAttribute(widgetElement, "width");
@@ -311,42 +247,32 @@ public class ConfigReader {
 
 			// Load any XML parameters
 
-			// need to load default parameters.
-			ConfigItemParameters defaultParameters = mDefaultParameters.get(elementName);
-			
-			System.out.println(" WIDGET ------ " + widgetName);
+			parseParameters( configWidget, widgetElement );
 
-			ConfigItemParameters parameters = parseParameters( widgetElement, defaultParameters );
-			configWidget.item.setParameters(parameters);
+			// TODO This should go. Would crash if it wasn't a IMidiController
+			((IMidiController)controller).setName(configWidget.displayName);
 
-			//updateParameters(mc.getParameters(), widgetElement);
-			//System.out.println(mc);
-		} 
+		}
 
 		// Returns null if widget was null
 		return configWidget;
 	}
 
 
-	// Needs to 
-	private ConfigItemParameters parseParameters(Element widgetElement, ConfigItemParameters defaults) {
+	/**
+	 * Adds and overwrites any parameters found on widgetElement on the supplied
+	 * item's parameters.
+	 * 
+	 * @param item
+	 * @param itemElement
+	 */
+	private void parseParameters(ConfigItem item, Element itemElement) {
 
-		ConfigItemParameters itemParameters = new ConfigItemParameters();
-		NodeList parameterElements = widgetElement.getChildNodes();
+		//ConfigItemParameters itemParameters = new ConfigItemParameters();
+		NodeList parameterElements = itemElement.getChildNodes();
 
 		// Copy default values
 
-		for (HashMap<String, Object> parameter : defaults.data) {
-			
-			HashMap<String, Object> parameterCopy = new HashMap<String, Object>();
-			for (String key : parameter.keySet()) {
-				parameterCopy.put(key, parameter.get(key));
-			}
-			
-			itemParameters.data.add( parameterCopy );
-		}
-
-		
 		final int length = parameterElements.getLength();
 		
 		for (int e = 0; e < length; e++) {
@@ -358,49 +284,26 @@ public class ConfigReader {
 
 				if (name.equals("parameter")) {
 
-
-
-					//HashMap<String, Object> parameters = new HashMap<String, Object>();
 					NamedNodeMap attributes = parameterElement.getAttributes();
 
 					int id = Integer.parseInt((String)attributes.getNamedItem("id").getNodeValue());
 
-					HashMap<String, Object> parameters = itemParameters.getParameterById(id);
+					HashMap<String, Object> parameters = item.parameters.getParameterById(id);
 					if (parameters == null) {
 						parameters = new HashMap<String, Object>();
-						itemParameters.data.add(parameters);
+						item.parameters.data.add(parameters);
 					}
 
-					System.out.println("attributes length: " + attributes.getLength());
 					for (int a=0; a < attributes.getLength(); a++) {
 						Node node = attributes.item(a);
 						parameters.put(node.getNodeName(), node.getNodeValue());
 					}
 
-					// Only add <parameter> if it has id set.
-					//if (parameters.get("id") != null) {
-						/*
-						int id = Integer.parseInt( (String)parameters.get("id") );
-						HashMap<String, Object> def = defaults.getParameterById(id);
-
-						// Look through defaults and add any missing values from the defaults.
-						// TODO: def should never be null when this code is finished
-						if (def != null) {
-							for (String key : def.keySet()) {
-								if (parameters.get(key) == null)
-									parameters.put(key, def.get(key));
-							}
-						}*/
-
-						//itemParameters.data.add(parameters);
-					//} else {
-						//System.out.println("Warning: <parameter> didn't have id set.");
-					//}
 				}
 			}
 		}
 
-		return itemParameters;
+		//return itemParameters;
 
 	}
 

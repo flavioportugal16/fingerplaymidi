@@ -1,6 +1,9 @@
 package com.flat20.gui.widgets;
 
+import java.lang.reflect.Constructor;
+
 import com.flat20.fingerplay.config.dto.ConfigItem;
+import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.config.dto.ConfigScreen;
 import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.gui.animations.Animation;
@@ -37,7 +40,11 @@ public class MidiWidgetContainer extends WidgetContainer implements IScrollable 
 		mSlide = new Slide(this, 0, y);
 	}
 
-	public void setConfigItems(com.flat20.fingerplay.config.dto.ConfigLayout layout) {
+	/**
+	 * Goes through the ConfigLayout and instantiates any ConfigItems in it.
+	 * @param layout
+	 */
+	public void setConfigItems(ConfigLayout layout) {
 		// Scale values if layout wasn't exactly the right size.
 		float scaleX = mScreenWidth / (float)layout.width;
 		float scaleY = mScreenHeight / (float)layout.height;
@@ -54,51 +61,31 @@ public class MidiWidgetContainer extends WidgetContainer implements IScrollable 
 			wc.y = screenY;
 	
 	    	for (ConfigItem configItem : screen.items) {
-	
-				String name = configItem.tagName;
-				Widget widget = null;
-	
-				if (name.equals("button") || name.equals("pad")) {
-					widget = new Pad( (IMidiController) configItem.item );
-				} else if (name.equals("slider")) {
-					widget = new Slider( (IMidiController) configItem.item );
-	
-				} else if (name.equals("touchpad") || name.equals("xypad")) {
-					widget = new XYPad( (IMidiController) configItem.item );
+
+				try {
+					Class<?> WidgetClass = Class.forName( configItem.viewClassName );
+					Class<?>[] classParams = new Class<?>[] {IMidiController.class};
+					Object[] objectParams = new Object[] { (IMidiController) configItem.item };
+					Constructor<?> ctor = WidgetClass.getConstructor( classParams );
+
+					Widget widget = (Widget) ctor.newInstance(objectParams);
+
+					if (widget != null) {
+
+						int widgetWidth = (int)(configItem.width * scaleX);
+						int widgetHeight = (int)(configItem.height * scaleY);
+
+						widget.x = (int)(configItem.x * scaleX);
+						widget.y = (int)(configItem.y * scaleY);
+						widget.setSize(widgetWidth, widgetHeight);
+						wc.addSprite(widget);
+
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				else if (name.equals("accelerometer") 
-						|| name.equals("orientation") 
-						|| name.equals("magfield")
-						|| name.equals("gyroscope")) {	//3-axis
-					widget = new SensorXYPad( (IMidiController) configItem.item );
-				}
-				else if (name.equals("light")
-						|| name.equals("pressure")
-						|| name.equals("proximity")
-						|| name.equals("temperature")) {	//single value
-					widget = new SensorSlider( (IMidiController) configItem.item );
-				}
-	
-				if (widget != null) {
-	
-					int widgetWidth = (int)(configItem.width * scaleX);
-					int widgetHeight = (int)(configItem.height * scaleY);
-	
-					widget.x = (int)(configItem.x * scaleX);
-					widget.y = (int)(configItem.y * scaleY);
-					widget.setSize(widgetWidth, widgetHeight);
-					wc.addSprite(widget);
-	
-				}
-	
-	/*
-				Class<?> WidgetClass = Class.forName(widgetClass);
-				Class parameterTypes[] = new Class[] { IMidiController.class };
-				Constructor<?> ct = WidgetClass.getConstructor(parameterTypes);
-				Object argumentList[] = new Object[] { null };
-	
-				Widget widget = (Widget) WidgetClass.newInstance();
-	*/
+
 	    	}
 
 	    	addSprite( wc );

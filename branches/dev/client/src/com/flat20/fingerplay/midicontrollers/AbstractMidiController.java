@@ -2,11 +2,10 @@ package com.flat20.fingerplay.midicontrollers;
 
 import java.util.HashMap;
 
-import com.flat20.fingerplay.config.IConfigurable;
 import com.flat20.fingerplay.config.dto.ConfigItemParameters;
 import com.flat20.gui.widgets.MidiWidget;
 
-public abstract class AbstractMidiController implements IMidiController, IConfigurable {
+public abstract class AbstractMidiController implements IMidiController {
 
 	//private int mControllerNumber = CONTROLLER_NUMBER_UNASSIGNED;
 	private String mName = null;
@@ -133,7 +132,7 @@ public abstract class AbstractMidiController implements IMidiController, IConfig
 	}
 
 	public String toString() {
-		String result = this.mName + " Parameters:\n";
+		String result = "AbstractMidiController name: " + this.mName + " Parameters:\n";
 		if (mParameters != null) {
 			for (int i=0; i<mParameters.length; i++) {
 				result += mParameters[i] + "\n";

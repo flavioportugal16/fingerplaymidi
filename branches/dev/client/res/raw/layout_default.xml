@@ -15,26 +15,26 @@
 
 	 -->
 	<defaults>
-		<xypad class="com.flat20.gui.widgets.XYPad">
+		<xypad controller="com.flat20.fingerplay.midicontrollers.MidiController" view="com.flat20.gui.widgets.XYPad">
 			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="controlChange" visible="true" />
 			<parameter id="1" channel="0" controllerNumber="0" name="Horizontal" type="controlChange" visible="true" />
 			<parameter id="2" channel="0" controllerNumber="0" name="Vertical" type="controlChange" visible="true" />
 		</xypad>
-		<slider class="com.flat20.gui.widgets.Slider">
+		<slider controller="com.flat20.fingerplay.midicontrollers.MidiController" view="com.flat20.gui.widgets.Slider">
 			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="controlChange" visible="true" />
 			<parameter id="1" channel="0" controllerNumber="0" name="Vertical" type="controlChange" visible="true" />
 		</slider>
-		<pad class="com.flat20.gui.widgets.Pad">
+		<pad controller="com.flat20.fingerplay.midicontrollers.MidiController" view="com.flat20.gui.widgets.Pad">
 			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="note" visible="false" />
 		</pad>
 
 		<!-- Sensor controllers are under construction -->
-		<orientation class="com.flat20.gui.widgets.SensorXYPad">
+		<orientation view="com.flat20.gui.widgets.SensorXYPad">
 			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="controlChange" visible="true" />
 			<parameter id="1" channel="0" controllerNumber="0" name="Horizontal" type="controlChange" visible="true" />
 			<parameter id="2" channel="0" controllerNumber="0" name="Vertical" type="controlChange" visible="true" />
 		</orientation>
-		<proximity class="com.flat20.gui.widgets.SensorSlider">
+		<proximity view="com.flat20.gui.widgets.SensorSlider">
 			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="controlChange" visible="true" />
 			<parameter id="1" channel="0" controllerNumber="0" name="Vertical" type="controlChange" visible="true" />
 		</proximity>
