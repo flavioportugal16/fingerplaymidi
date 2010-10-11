@@ -23,7 +23,27 @@ public class ConfigItemParameters {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Doesn't create copies of values
+	 */
+	public ConfigItemParameters clone() {
+
+		ConfigItemParameters copy = new ConfigItemParameters(); 
+
+		for (HashMap<String, Object> parameter : data) {
+
+			HashMap<String, Object> parameterCopy = new HashMap<String, Object>();
+			for (String key : parameter.keySet()) {
+				parameterCopy.put(key, parameter.get(key));
+			}
+
+			copy.data.add( parameterCopy );
+		}
+
+		return copy;
+	}
+
 	public String toString() {
 		String res = "ConfigItemParameters: ";
 		for (HashMap<String, Object> parameter : data) {

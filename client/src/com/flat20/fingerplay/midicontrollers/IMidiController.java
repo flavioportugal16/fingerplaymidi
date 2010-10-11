@@ -1,8 +1,9 @@
 package com.flat20.fingerplay.midicontrollers;
 
+import com.flat20.fingerplay.config.IConfigurable;
 import com.flat20.gui.widgets.MidiWidget;
 
-public interface IMidiController {
+public interface IMidiController extends IConfigurable {
 
 	final public static int CONTROLLER_NUMBER_UNASSIGNED = -1;
 
