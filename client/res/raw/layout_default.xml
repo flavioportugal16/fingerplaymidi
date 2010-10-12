@@ -108,9 +108,9 @@
 		<screen x="0" y="0" width="854" height="478">
 			<xypad x="25" y="56" width="350" height="378" controllerNumber="0">
 				<!--  Should override internal settings so all parameters are still ok. -->
-				<parameter id="0" name="Press" type="controlChange" controllerNumber="0" />
-				<parameter id="1" name="Horizontal" type="controlChange" controllerNumber="1" />
-				<parameter id="2" name="Vertical" type="controlChange" controllerNumber="2" />
+				<parameter id="0" name="Press" type="controlChange" controllerNumber="10" />
+				<parameter id="1" name="Horizontal" type="controlChange" controllerNumber="11" />
+				<parameter id="2" name="Vertical" type="controlChange" controllerNumber="12" />
 			</xypad>
 			<xypad x="405" y="56" width="350" height="378" controllerNumber="3">
 				<!--  Should override internal settings so all parameters are still ok. -->

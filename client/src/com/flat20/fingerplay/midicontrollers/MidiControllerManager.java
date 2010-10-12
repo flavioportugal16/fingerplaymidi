@@ -7,6 +7,7 @@ import java.util.Set;
 import android.hardware.Sensor;
 import android.util.Log;
 
+import com.flat20.fingerplay.config.IConfigUpdateListener;
 import com.flat20.fingerplay.config.dto.ConfigItem;
 import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.config.dto.ConfigScreen;
@@ -29,7 +30,7 @@ import com.flat20.gui.widgets.WidgetContainer;
  * @author andreas
  *
  */
-public class MidiControllerManager {
+public class MidiControllerManager implements IConfigUpdateListener {
 
     private LinkedHashMap<IMidiController, Integer> mMidiControllers = new LinkedHashMap<IMidiController, Integer>();
 	private int mControllerIndex = 0;
@@ -48,13 +49,16 @@ public class MidiControllerManager {
 		mConnectionManager.addConnectionListener(mConnectionListener);
 	}
 
+	// IConfigUpdateListener
 	// Add all MIDI controllers to the MidiControllerManager
-	public void setConfigItems(ConfigLayout layout) {
+	@Override
+	public void onConfigUpdated(ConfigLayout layout) {
         for (ConfigScreen screen : layout.screens) {
 
         	for (ConfigItem configItem : screen.items) {
-        		if (configItem.item instanceof IMidiController) {
-        			IMidiController mc = (IMidiController) configItem.item;
+        		if (configItem.itemController instanceof IMidiController) {
+        			IMidiController mc = (IMidiController) configItem.itemController;
+        			mc.setName(configItem.displayName);
         			addMidiController(mc);
         		}
         	}
