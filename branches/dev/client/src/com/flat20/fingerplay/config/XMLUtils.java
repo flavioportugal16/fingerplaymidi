@@ -33,5 +33,46 @@ public class XMLUtils {
 		return result;
 	}
 
+	/**
+	 * Returns all child Elements of another Element.
+	 * 
+	 * @param element
+	 * @return
+	 */
+	/*
+	public static ArrayList<Element> getChildElements(Element element) {
+		return getChildElements(element, null);
+	}*/
 
+	/**
+	 * Returns all child Elements with the specified name.
+	 * 
+	 * @param element
+	 * @param childElementName
+	 * @return
+	 */
+	/*
+	public static ArrayList<Element> getChildElements(Element element, String childElementName) {
+
+		ArrayList<Element> children = new ArrayList<Element>();
+
+
+		NodeList childNodes = element.getChildNodes();
+		final int length = childNodes.getLength();
+		for (int e = 0; e < length; e++) {
+
+			if (childNodes.item(e).getNodeType() == Node.ELEMENT_NODE) {
+
+				Element childElement = (Element) childNodes.item(e);
+				String name = childElement.getNodeName();
+
+				if (childElementName != null && name.equals( childElementName )) {
+					children.add(childElement);
+				}
+			}
+		}
+		
+		return children;
+
+	}*/
 }

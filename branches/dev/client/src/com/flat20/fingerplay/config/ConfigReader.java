@@ -2,7 +2,6 @@ package com.flat20.fingerplay.config;
 
 import java.io.File;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -18,7 +17,6 @@ import com.flat20.fingerplay.config.dto.ConfigItem;
 import com.flat20.fingerplay.config.dto.ConfigItemParameters;
 import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.config.dto.ConfigScreen;
-import com.flat20.fingerplay.midicontrollers.IMidiController;
 
 /**
  * Reads and parses layout XML files into ControllerInfo classes
@@ -136,19 +134,19 @@ public class ConfigReader {
 		NodeList layouts = mXmlDoc.getElementsByTagName("layout");
 		int bestDiff = 10000;
 
-		for (int l = 0; l < layouts.getLength(); l++) {
-			if (layouts.item(l).getNodeType() == Node.ELEMENT_NODE) {
-				Element tempLayout = (Element) layouts.item(l);
+		for (int i = 0; i < layouts.getLength(); i++) {
+			//if (layouts.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				Element tempLayout = (Element) layouts.item(i);
 				int layoutWidth = XMLUtils.getIntegerAttribute(tempLayout, "screenWidth");
 				int layoutHeight = XMLUtils.getIntegerAttribute(tempLayout, "screenHeight");
 				int diff = Math.abs(width - layoutWidth);
 				if (diff < bestDiff) {
 					bestDiff = diff;
-					configLayout.ID = l;
+					configLayout.ID = i;
 					configLayout.width = layoutWidth;
 					configLayout.height = layoutHeight;
 				}
-			}
+			//}
 		}
 
 		// Couldn't find any layout
@@ -179,32 +177,27 @@ public class ConfigReader {
 		final int length = screenElements.getLength();
 		for (int s = 0; s < length; s++) {
 
-			if (screenElements.item(s).getNodeType() == Node.ELEMENT_NODE) {
+			Element screenElement = (Element) screenElements.item(s);
 
-				Element screenElement = (Element) screenElements.item(s);
+			ConfigScreen configScreen = new ConfigScreen();
+			configScreen.x = XMLUtils.getIntegerAttribute(screenElement, "x");
+			configScreen.y = XMLUtils.getIntegerAttribute(screenElement, "y");
+			configScreen.width = XMLUtils.getIntegerAttribute(screenElement, "width");
+			configScreen.height = XMLUtils.getIntegerAttribute(screenElement, "height");
 
-				ConfigScreen configScreen = new ConfigScreen();
-				configScreen.x = XMLUtils.getIntegerAttribute(screenElement, "x");
-				configScreen.y = XMLUtils.getIntegerAttribute(screenElement, "y");
-				configScreen.width = XMLUtils.getIntegerAttribute(screenElement, "width");
-				configScreen.height = XMLUtils.getIntegerAttribute(screenElement, "height");
+			NodeList widgets = screenElement.getChildNodes();
+			final int wlength =  widgets.getLength();
+			for (int e = 0; e < wlength; e++) {
 
-				NodeList widgets = screenElement.getChildNodes();
-				final int wlength =  widgets.getLength();
-				for (int e = 0; e < wlength; e++) {
+				if (widgets.item(e).getNodeType() == Node.ELEMENT_NODE) {
 
-					if (widgets.item(e).getNodeType() == Node.ELEMENT_NODE) {
-
-						Element widgetElement = (Element) widgets.item(e);
-						ConfigItem configItem = parseWidget(widgetElement);
-						configItem.item.setParameters(configItem.parameters);
-						configScreen.items.add(configItem);
-					}
+					Element widgetElement = (Element) widgets.item(e);
+					ConfigItem configItem = parseWidget(widgetElement);
+					configScreen.items.add(configItem);
 				}
-
-				configLayout.screens.add(configScreen);
-
 			}
+
+			configLayout.screens.add(configScreen);
 		}
 
 	}
@@ -229,15 +222,6 @@ public class ConfigReader {
 
 		if (configWidget != null) {
 
-			// Creates controller class - Should be done by MidiControllerManager just like
-			// View is created outside of Config too.
-			Class<?> ControllerClass = Class.forName( configWidget.controllerClassName );
-			Class<?>[] classParams = new Class<?>[] {};
-			Object[] objectParams = new Object[] {};
-			Constructor<?> ctor = ControllerClass.getConstructor( classParams );
-			IConfigurable controller = (IConfigurable) ctor.newInstance( objectParams );
-
-			configWidget.item = controller;
 			configWidget.tagName = elementName;
 			configWidget.displayName = elementName + " " + (++numButtons);
 			configWidget.x = XMLUtils.getIntegerAttribute(widgetElement, "x");
@@ -246,12 +230,7 @@ public class ConfigReader {
 			configWidget.height = XMLUtils.getIntegerAttribute(widgetElement, "height");
 
 			// Load any XML parameters
-
 			parseParameters( configWidget, widgetElement );
-
-			// TODO This should go. Would crash if it wasn't a IMidiController
-			((IMidiController)controller).setName(configWidget.displayName);
-
 		}
 
 		// Returns null if widget was null
@@ -268,43 +247,29 @@ public class ConfigReader {
 	 */
 	private void parseParameters(ConfigItem item, Element itemElement) {
 
-		//ConfigItemParameters itemParameters = new ConfigItemParameters();
-		NodeList parameterElements = itemElement.getChildNodes();
-
-		// Copy default values
-
+		NodeList parameterElements = itemElement.getElementsByTagName("parameter");
 		final int length = parameterElements.getLength();
-		
+
 		for (int e = 0; e < length; e++) {
+			Element parameterElement = (Element) parameterElements.item(e);
+			NamedNodeMap attributes = parameterElement.getAttributes();
 
-			if (parameterElements.item(e).getNodeType() == Node.ELEMENT_NODE) {
+			int id = Integer.parseInt((String)attributes.getNamedItem("id").getNodeValue());
 
-				Element parameterElement = (Element) parameterElements.item(e);
-				String name = parameterElement.getNodeName();
-
-				if (name.equals("parameter")) {
-
-					NamedNodeMap attributes = parameterElement.getAttributes();
-
-					int id = Integer.parseInt((String)attributes.getNamedItem("id").getNodeValue());
-
-					HashMap<String, Object> parameters = item.parameters.getParameterById(id);
-					if (parameters == null) {
-						parameters = new HashMap<String, Object>();
-						item.parameters.data.add(parameters);
-					}
-
-					for (int a=0; a < attributes.getLength(); a++) {
-						Node node = attributes.item(a);
-						parameters.put(node.getNodeName(), node.getNodeValue());
-					}
-
-				}
+			// Load old parameter value if it's been set.
+			HashMap<String, Object> parameters = item.parameters.getParameterById(id);
+			if (parameters == null) {
+				parameters = new HashMap<String, Object>();
+				item.parameters.data.add(parameters);
 			}
+
+			// Update parameter with attributes from the XML tag.
+			for (int a=0; a < attributes.getLength(); a++) {
+				Node node = attributes.item(a);
+				parameters.put(node.getNodeName(), node.getNodeValue());
+			}
+
 		}
-
-		//return itemParameters;
-
 	}
 
 }

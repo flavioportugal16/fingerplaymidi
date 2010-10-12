@@ -8,7 +8,7 @@ import java.lang.Exception;
 // what do we for labels?
 public class ConfigItem {
 
-	public IConfigurable item;
+	public IConfigurable itemController;
 	public ConfigItemParameters parameters;
 	public String tagName;
 	public String controllerClassName;
@@ -24,12 +24,12 @@ public class ConfigItem {
 	 */
 	public ConfigItem clone() {
 
-		if (item != null)
+		if (itemController != null)
 			return null;
 
 		ConfigItem copy = new ConfigItem();
 
-		copy.item = item;
+		copy.itemController = itemController;
 		if (parameters != null)
 			copy.parameters = parameters.clone();
 		copy.tagName = tagName;
@@ -48,7 +48,7 @@ public class ConfigItem {
 	}
 
 	public String toString() {
-		return "ConfigWidget item: " + item + ", tagName: " + tagName + ", controllerClassName: " + controllerClassName + ", viewClassName: " + viewClassName + ", displayName: " + displayName + ", x: " + x + ", y: " + y + ", width: " + width + ", height: " + height + ", params: " + parameters;
+		return "ConfigWidget item: " + itemController + ", tagName: " + tagName + ", controllerClassName: " + controllerClassName + ", viewClassName: " + viewClassName + ", displayName: " + displayName + ", x: " + x + ", y: " + y + ", width: " + width + ", height: " + height + ", params: " + parameters;
 	}
 
 }

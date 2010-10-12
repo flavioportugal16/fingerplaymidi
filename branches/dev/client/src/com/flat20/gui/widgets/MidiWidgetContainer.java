@@ -2,6 +2,7 @@ package com.flat20.gui.widgets;
 
 import java.lang.reflect.Constructor;
 
+import com.flat20.fingerplay.config.IConfigUpdateListener;
 import com.flat20.fingerplay.config.dto.ConfigItem;
 import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.config.dto.ConfigScreen;
@@ -18,7 +19,7 @@ import com.flat20.gui.widgets.Scrollbar.IScrollable;
  * @author andreas
  *
  */
-public class MidiWidgetContainer extends WidgetContainer implements IScrollable {
+public class MidiWidgetContainer extends WidgetContainer implements IScrollable, IConfigUpdateListener {
 
 	private int mScreenWidth;
 	private int mScreenHeight;
@@ -44,7 +45,8 @@ public class MidiWidgetContainer extends WidgetContainer implements IScrollable 
 	 * Goes through the ConfigLayout and instantiates any ConfigItems in it.
 	 * @param layout
 	 */
-	public void setConfigItems(ConfigLayout layout) {
+	@Override
+	public void onConfigUpdated(ConfigLayout layout) {
 		// Scale values if layout wasn't exactly the right size.
 		float scaleX = mScreenWidth / (float)layout.width;
 		float scaleY = mScreenHeight / (float)layout.height;
@@ -65,7 +67,7 @@ public class MidiWidgetContainer extends WidgetContainer implements IScrollable 
 				try {
 					Class<?> WidgetClass = Class.forName( configItem.viewClassName );
 					Class<?>[] classParams = new Class<?>[] {IMidiController.class};
-					Object[] objectParams = new Object[] { (IMidiController) configItem.item };
+					Object[] objectParams = new Object[] { (IMidiController) configItem.itemController };
 					Constructor<?> ctor = WidgetClass.getConstructor( classParams );
 
 					Widget widget = (Widget) ctor.newInstance(objectParams);

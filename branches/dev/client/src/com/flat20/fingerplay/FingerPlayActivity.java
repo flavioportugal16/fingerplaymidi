@@ -1,7 +1,6 @@
 package com.flat20.fingerplay;
 
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,11 +10,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.widget.Toast;
 
-import com.flat20.fingerplay.config.ConfigReader;
-import com.flat20.fingerplay.config.dto.ConfigLayout;
+import com.flat20.fingerplay.config.ConfigManager;
 import com.flat20.fingerplay.midicontrollers.MidiControllerManager;
 import com.flat20.fingerplay.network.ConnectionManager;
 import com.flat20.fingerplay.settings.SettingsModel;
@@ -32,8 +29,10 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 	private SettingsModel mSettingsModel;
 
     private MidiControllerManager mMidiControllerManager;
- 
+    
     private MidiWidgetContainer mMidiWidgetsContainer;
+    
+    private ConfigManager mConfigManager;
 
     private Logo mLogo;
  
@@ -55,7 +54,9 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 		mSettingsModel = SettingsModel.getInstance();
 		mSettingsModel.init(this);
 
-		mMidiControllerManager = MidiControllerManager.getInstance();        
+		mMidiControllerManager = MidiControllerManager.getInstance();
+		
+		mConfigManager = ConfigManager.getInstance();
 
 		super.onCreate(savedInstanceState);
 
@@ -89,43 +90,17 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 		mRenderer.addSprite(mLogo);
 
         mMidiWidgetsContainer = new MidiWidgetContainer(mWidth, mHeight);
- 
-        // TODO Move config parsing somewhere better
-        File xmlFile = new File(Environment.getExternalStorageDirectory() + "/FingerPlayMIDI/" + mSettingsModel.layoutFile);
 
-        ConfigReader reader = null;
-        try {
-        	if (mSettingsModel.layoutFile != null && xmlFile != null) {
-    			reader = new ConfigReader( xmlFile );
-        	}
-		} catch (Exception e) {
-			// Tried loading and parsing file but failed. Most likely the file wasn't there.
-			System.out.println(e);
-		}
+        mConfigManager.setDefaultConfigXml( getApplicationContext().getResources().openRawResource(R.raw.layout_default) );
+		mConfigManager.setScreenSize(mWidth, mHeight);
 
+		mConfigManager.addListener(mMidiControllerManager);
+		mConfigManager.addListener(mMidiWidgetsContainer);
 		try {
-			if (reader == null)
-				reader = new ConfigReader( getApplicationContext().getResources().openRawResource(R.raw.layout_default) );
-		} catch (Exception e) {
-			// We won't have
-			e.printStackTrace();
-		}
-
-		try {
-			ConfigLayout layout = reader.selectLayout(mWidth, mHeight);
-			reader.parseLayout(layout); // Fills layout with info from the config file.
-
-			// Create Views for all items
-			// and assign a listener from the view to the controller
-			mMidiWidgetsContainer.setConfigItems( layout );
-
-			// Add all MIDI controllers to the MidiControllerManager
-			mMidiControllerManager.setConfigItems( layout );
-
+			mConfigManager.updateConfig();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 
 
         /*

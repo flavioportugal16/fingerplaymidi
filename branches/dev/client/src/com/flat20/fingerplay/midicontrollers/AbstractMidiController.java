@@ -67,9 +67,10 @@ public abstract class AbstractMidiController implements IMidiController {
 	 */
 	@Override
 	public void sendParameter(int parameterId, int value) {
+
 		if (mListener == null)
 			return;
- 
+
 		final Parameter p = mParameters[parameterId];
 		final int type = p.type;
 		switch(type) {
@@ -109,7 +110,6 @@ public abstract class AbstractMidiController implements IMidiController {
 		mParameters = new Parameter[parameters.data.size()];
 
 		for (HashMap<String, Object> map : parameters.data) {
-			System.out.println("AbstractMidiController::setParameters - map = " + map);
 
 			int id = Integer.parseInt((String)map.get("id"));
 			int channel = Integer.parseInt((String)map.get("channel"));
@@ -122,7 +122,11 @@ public abstract class AbstractMidiController implements IMidiController {
 			if ("controlChange".equals(stringType)) {
 				type = Parameter.TYPE_CONTROL_CHANGE;
 			} else if ("note".equals(stringType)) {
-				type = Parameter.TYPE_NOTE;
+				type = Parameter.TYPE_NOTE_ON;
+			} else if ("noteOn".equals(stringType)) {
+				type = Parameter.TYPE_NOTE_ON;
+			} else if ("noteOff".equals(stringType)) {
+				type = Parameter.TYPE_NOTE_OFF;
 			}
 
 			Parameter param = new Parameter(id, channel, controllerNumber, name, type, visible);
