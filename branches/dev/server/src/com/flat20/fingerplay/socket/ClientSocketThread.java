@@ -26,20 +26,24 @@ import com.flat20.fingerplay.socket.commands.misc.DeviceList;
 import com.flat20.fingerplay.socket.commands.misc.RequestMidiDeviceList;
 import com.flat20.fingerplay.socket.commands.misc.SetMidiDevice;
 import com.flat20.fingerplay.socket.commands.misc.Version;
+import com.flat20.fingerplay.view.IView;
 
 public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 
 	final private Socket client;
 	final private Midi midi;
+	final private IView mView;
+
 	final private DataInputStream in;
 	final private DataOutputStream out;
 	final private FingerWriter mWriter;
 
 	final private MidiReceiver mMidiReceiver;
 
-	public ClientSocketThread(Socket client, Midi midi) throws IOException {
+	public ClientSocketThread(Socket client, Midi midi, IView view) throws IOException {
 		this.client = client;
 		this.midi = midi;
+		mView = view;
 
 		in = new DataInputStream(client.getInputStream());
 		out = new DataOutputStream(client.getOutputStream());
@@ -48,39 +52,32 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 		mMidiReceiver = new MidiReceiver(this);
 
 		//mBuffer = new byte[ 0xFFFF ]; // absolute maximum length is 65535
+		mView.print("hello");
 	}
 
 	public void run() {
 		try {
-			//byte[] buffer = mBuffer;
 
-			//final DataInputStream in = new DataInputStream(client.getInputStream());
-			//final DataOutputStream out = new DataOutputStream(client.getOutputStream());
 			final FingerReader reader = new FingerReader(in, this);
 
 			while (client.isConnected()) {
-
-				//if (in.available() > 0) {
-
-					try {
-						// Reads one command
-						reader.readCommand();
-					} catch (SocketTimeoutException e) {
-						// TODO Remove
-						System.out.println("socket read timed out..");
-					}
-				//}
+				try {
+					// Reads one command
+					reader.readCommand();
+				} catch (SocketTimeoutException e) {
+					e.printStackTrace();
+				}
 			}
 
 		} catch (SocketException e) {
-			//System.out.println(e);
+			e.printStackTrace();
 		} catch (EOFException e) {
-			//System.out.println(e);
+			e.printStackTrace();
 		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println("Client message too long for buffer.");
-			System.out.println(e);
+			mView.print("Client message too long for buffer.");
+			e.printStackTrace();
 		} catch(Exception e) {
-			System.out.println("S: Error");
+			mView.print("S: Error");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -88,12 +85,12 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 			} catch (IOException io) {
 			}
 		}
-		System.out.println("Phone disconnected.");
+		mView.print("Phone disconnected.");
 		return;
 	}
 
 	public void onVersion(Version clientVersion) throws Exception {//byte command, DataInputStream in, DataOutputStream out) throws Exception {
-		System.out.println("Client version: " + clientVersion.message);
+		mView.print("Client version: " + clientVersion.message);
 
 		Version version = new Version(FingerPlayServer.VERSION);
 
@@ -101,7 +98,7 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 	}
 
 	public void onMidiSocketCommand(MidiSocketCommand socketCommand) throws Exception {
-		System.out.println("midiCommand = " + socketCommand.midiCommand + " channel = " + socketCommand.channel + ", data1 = " + socketCommand.data1 + " data2 = " + socketCommand.data2);
+		mView.print("midiCommand = " + socketCommand.midiCommand + " channel = " + socketCommand.channel + ", data1 = " + socketCommand.data1 + " data2 = " + socketCommand.data2);
 		synchronized (midi) {
 			midi.sendShortMessage(socketCommand.midiCommand, socketCommand.channel, socketCommand.data1, socketCommand.data2);						
 		}
@@ -126,16 +123,26 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 
 		String device = ssm.message;
 
-		System.out.println("Set MIDI Device: " + device);
+		mView.print("Set MIDI Device: " + device);
 		synchronized (midi) {
 			midi.close();
 			MidiDevice midiDeviceIN = midi.open(device, false); // true = bForOutput
-			midi.open(device, true); // true = bForOutput
-
-			System.out.println("midiDeviceIN = " + midiDeviceIN);
+			
+			mView.print("midiDeviceIN = " + midiDeviceIN);
 
 			if (midiDeviceIN != null) {
 				Transmitter	t = midiDeviceIN.getTransmitter();
+				if (t != null)
+					t.setReceiver(mMidiReceiver);
+			}
+
+			// Out device doesn't necessarily have the same name as the input device.
+			// But maybe it doesn't matter?
+			MidiDevice midiDeviceOUT = midi.open(device, true); // true = bForOutput
+			mView.print("midiDeviceOUT = " + midiDeviceOUT);
+
+			if (midiDeviceOUT != null) {
+				Transmitter	t = midiDeviceOUT.getTransmitter();
 				if (t != null)
 					t.setReceiver(mMidiReceiver);
 			}
@@ -148,10 +155,11 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 	}
 
 
-	// IMidiListener
+	// IMidiListener - Incoming MIDI from DAW is sent back to the FP Client.
 
 	public void onControlChange(int channel, int control2, int value) {
 		MidiControlChange mcc = new MidiControlChange(0xB0, channel, control2, value);
+		mView.print("IMidiListener.onControlChange channel: " + channel + ", control2: " + control2 + ", value: " + value);
 		try {
 			mWriter.write( mcc );
 		} catch (Exception e) {
