@@ -1,13 +1,22 @@
 package com.flat20.fingerplay;
 
+import java.net.BindException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import com.flat20.fingerplay.Midi;
 import com.flat20.fingerplay.socket.ClientSocketThread;
 import com.flat20.fingerplay.socket.MulticastServer;
 import com.flat20.fingerplay.socket.commands.SocketCommand;
+import com.flat20.fingerplay.view.ConsoleView;
+import com.flat20.fingerplay.view.IView;
+import com.flat20.fingerplay.view.MainWindow;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalAttribute;
 
 public class FingerPlayServer implements Runnable{
 
@@ -18,9 +27,10 @@ public class FingerPlayServer implements Runnable{
 	public static final int MULTICAST_SERVERPORT = 9013;
 
 	private Midi midi;
-	
-	private String mLocalIP = null;
-	private static int mPort = SERVERPORT;
+
+	private static String mLocalAddress = null;
+	private static int mLocalPort = -1;
+	//private static InetAddress mPreferrededAddress = null;
 
 	public void run() {
 		try {
@@ -40,68 +50,202 @@ public class FingerPlayServer implements Runnable{
 			//SocketStringCommand sm = new SetMidiDeviceCommand("apa");
 			SocketCommand s = new SocketCommand();
 
-
+			
  			// Open MIDI Device.
 
 			midi = new Midi();
-			//midi.open("SB Audigy Synth B [CCC0]");
-			//midi.open("LoopBe Internal MIDI", true); // true = bForOutput
-			//midi.playnote(1000);
 
-			//Midi midiOut = new Midi();
-			//midiOut.open("LoopBe Internal MIDI", false);
+			Midi.listDevices(true, true, true);
 
-			//midi.listDevices(true, false, false);
+			//MainWindow window = new MainWindow();
+			ConsoleView console = new ConsoleView();
+
+			IView view = console; // Set the view for this session.
+
+
+			// Show network interfaces if one hasn't been selected
 
 			// If update function didn't get the local IP we'll try
 			// a cheaper alternative here. Might give us 127.0.0.1 though.
 
-			if (mLocalIP == null) {
-				InetAddress localAddress = InetAddress.getLocalHost();
-				mLocalIP = localAddress.getHostAddress();
+			//InetAddress localAddress = mPreferrededAddress;
+			String localIP = mLocalAddress;
+			int port = mLocalPort;
+
+			//NetworkInterface ni NetworkInterface.getByName("asd");
+			
+
+
+			// Wait for client connection
+			
+			ServerSocket serverSocket = null;
+			for (int i=0; i<10; i++) {
+				try {
+					serverSocket = new ServerSocket(port);
+					break;
+				} catch (BindException e) {
+					e.printStackTrace();
+					port++;
+				}
 			}
+
+			if (serverSocket == null) {
+				view.print("Couldn't find any available port to listen to.");
+				return;
+			}
+
 
 			// Start multicast server
 
-			String multicastOutputMessage = mLocalIP + ":" + mPort;
+			String multicastOutputMessage = localIP + ":" + port;
 
 			Thread multicastServerThread = new Thread( new MulticastServer(MULTICAST_SERVERIP, MULTICAST_SERVERPORT, multicastOutputMessage) );
 			multicastServerThread.start();
 
 
-			System.out.println("Listening on " + multicastOutputMessage);
+			view.print("Listening on " + multicastOutputMessage);
 
-			// Wait for client connection
-				
-			ServerSocket serverSocket = new ServerSocket(mPort);
-			System.out.println("Waiting for connection from phone..");
+			view.print("Waiting for connection from phone..");
 			while (true) {
 
 				Socket client = serverSocket.accept();
-				ClientSocketThread st = new ClientSocketThread(client, midi);
+				ClientSocketThread st = new ClientSocketThread(client, midi, view);
 				Thread thread = new Thread( st );
 				thread.start();
 
-				System.out.println("Phone connected.");
+				view.print("Phone connected.");
 			}
 
 		} catch (Exception e) {
-			System.out.println(e.toString());
+			e.printStackTrace();
 		}
 
 	}
 
 
 	public static void main (String[] args) {
+/*
 		if (args.length > 0) {
+
 			try {
 				int port = Integer.parseInt(args[0]);
 				mPort = port;
 			} catch (NumberFormatException e) {
 				System.out.println("Couldn't set server port to " + args[0]);
 			}
-		}
+*/
+			// Get the interface
+			if (args.length > 0) {
+
+					String validAddress = null;
+					int validPort = -1;
+
+					try {
+						String address = (args[0].split(":")[0]);
+						InetAddress inet = InetAddress.getByName(address);
+						NetworkInterface ni = NetworkInterface.getByInetAddress(inet);
+						if (ni != null)
+							validAddress = inet.getHostAddress();
+						else {
+							System.out.println("Couldn't find network interface for " + address);
+						}
+
+					} catch (UnknownHostException e) {
+						System.out.println(e);
+					} catch (SocketException e) {
+						System.out.println(e);
+					}
+
+					// Set hostname to 127.0.0.1 if all else fails.
+					if (validAddress == null) {
+						try {
+							InetAddress inetAddress = InetAddress.getLocalHost();
+							validAddress = inetAddress.getHostAddress();
+						} catch (UnknownHostException e) {
+						}
+					}
+
+					try {
+						validPort = Integer.parseInt( (args[0].split(":")[1]) );
+					} catch (Exception e) {
+					}
+
+					if (validPort == -1) {
+						try {
+							validPort = Integer.parseInt( (args[0].split(":")[0]) );
+						} catch (Exception e) {
+						}
+					}
+
+					// If all else fails set to default port.
+					if (validPort == -1) {
+						validPort = SERVERPORT;
+					}
+
+					mLocalAddress = validAddress;
+					mLocalPort = validPort;
+
+
+						//NetworkInterface ni = NetworkInterface.getByInetAddress(mPreferrededAddress);
+						//System.out.println(ni);
+/*
+					System.out.println(mPreferrededAddress);
+
+					if (mPreferrededAddress != null) {
+						NetworkInterface ni = NetworkInterface.getByInetAddress(mPreferrededAddress);
+						System.out.println(ni);
+					}
+*/
+				
+				/*} catch (SocketException e) {
+					System.out.println("IP address not found on any network interfaces: " + args[1]);
+					System.out.println(e);
+				}*/
+					/*
+				} catch (SocketException e) {
+					System.out.println(e);
+				}*/
+
+/*
+				if (mPreferrededAddress == null) {
+					try {
+						NetworkInterface ni = NetworkInterface.getByName(args[1]);
+						System.out.println(ni);
+						Enumeration addresses = ni.getInetAddresses();
+						while ( addresses.hasMoreElements() ) {
+							Object address = addresses.nextElement();
+							System.out.println( address.toString() );
+						} 
+					} catch (SocketException e) {
+							System.out.println(e);
+					}
+				}
+
+				if (mPreferrededAddress == null) {
+					System.out.println("Argument was not a valid network interface name or IP address.");
+				}
+*/
+//			}
+
+			} else {
+				
+			}
 		Thread desktopServerThread = new Thread(new FingerPlayServer());
 		desktopServerThread.start();
 	}
-} 
+/*
+	public void showNetworkInterfaces(IView view) {
+		try {
+			Enumeration interfaces = NetworkInterface.getNetworkInterfaces();
+			while ( interfaces.hasMoreElements() ) {
+				NetworkInterface ni = (NetworkInterface) interfaces.nextElement();
+				Enumeration addresses = ni.getInetAddresses();
+				view.print( ni.toString() );
+				//System.out.println(ni);
+			}
+		} catch (SocketException e) {
+			System.out.println(e);
+		}
+	}
+*/
+}
