@@ -55,7 +55,7 @@ public class FingerPlayServer implements Runnable{
 
 			midi = new Midi();
 
-			Midi.listDevices(true, true, true);
+			//Midi.listDevices(true, true, true);
 
 			//MainWindow window = new MainWindow();
 			ConsoleView console = new ConsoleView();
@@ -146,23 +146,11 @@ public class FingerPlayServer implements Runnable{
 						NetworkInterface ni = NetworkInterface.getByInetAddress(inet);
 						if (ni != null)
 							validAddress = inet.getHostAddress();
-						else {
-							System.out.println("Couldn't find network interface for " + address);
-						}
 
 					} catch (UnknownHostException e) {
 						System.out.println(e);
 					} catch (SocketException e) {
 						System.out.println(e);
-					}
-
-					// Set hostname to 127.0.0.1 if all else fails.
-					if (validAddress == null) {
-						try {
-							InetAddress inetAddress = InetAddress.getLocalHost();
-							validAddress = inetAddress.getHostAddress();
-						} catch (UnknownHostException e) {
-						}
 					}
 
 					try {
@@ -175,11 +163,6 @@ public class FingerPlayServer implements Runnable{
 							validPort = Integer.parseInt( (args[0].split(":")[0]) );
 						} catch (Exception e) {
 						}
-					}
-
-					// If all else fails set to default port.
-					if (validPort == -1) {
-						validPort = SERVERPORT;
 					}
 
 					mLocalAddress = validAddress;
@@ -228,10 +211,25 @@ public class FingerPlayServer implements Runnable{
 //			}
 
 			} else {
-				
 			}
-		Thread desktopServerThread = new Thread(new FingerPlayServer());
-		desktopServerThread.start();
+
+			// Set hostname to 127.0.0.1 if all else fails.
+			if (mLocalAddress == null) {
+				try {
+					InetAddress inetAddress = InetAddress.getLocalHost();
+					mLocalAddress = inetAddress.getHostAddress();
+				} catch (UnknownHostException e) {
+				}
+			}
+
+			// If all else fails set to default port.
+			if (mLocalPort == -1) {
+				mLocalPort = SERVERPORT;
+			}
+
+
+			Thread desktopServerThread = new Thread(new FingerPlayServer());
+			desktopServerThread.start();
 	}
 /*
 	public void showNetworkInterfaces(IView view) {
