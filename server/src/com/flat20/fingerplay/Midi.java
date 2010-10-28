@@ -254,7 +254,7 @@ public class Midi {
 		ArrayList deviceNames = new ArrayList();
 
 
-		int deviceNameIndex = 0;
+		//int deviceNameIndex = 0;
 		for (int i = 0; i < aInfos.length; i++) {
 			try {
 				MidiDevice	device = MidiSystem.getMidiDevice(aInfos[i]);

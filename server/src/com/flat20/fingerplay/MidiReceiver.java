@@ -23,7 +23,7 @@ public class MidiReceiver implements Receiver {
 		"Active Sensing",
 		"System Reset"
 	};
-
+/*
 	private static final String[] QUARTER_FRAME_MESSAGE_TEXT = {
 		"frame count LS: ",
 		"frame count MS: ",
@@ -41,7 +41,7 @@ public class MidiReceiver implements Receiver {
 		"30 frames/second (drop)",
 		"30 frames/second (non-drop)",
 	};
-
+*/
 	private IMidiListener mListener;
 
 	public MidiReceiver(IMidiListener listener) {

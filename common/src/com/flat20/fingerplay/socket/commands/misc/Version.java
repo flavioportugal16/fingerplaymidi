@@ -13,4 +13,8 @@ public class Version extends SocketStringCommand {
 		super(SocketCommand.COMMAND_VERSION, version);
 	}
 
+	public String getVersion() {
+		return message;
+	}
+
 }

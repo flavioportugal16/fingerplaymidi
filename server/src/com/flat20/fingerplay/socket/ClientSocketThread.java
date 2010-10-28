@@ -9,7 +9,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import javax.sound.midi.MidiDevice;
-import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 
 import com.flat20.fingerplay.FingerPlayServer;
@@ -31,7 +30,9 @@ import com.flat20.fingerplay.view.IView;
 public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 
 	final private Socket client;
-	final private Midi midi;
+	final private Midi mMidiOut; // In from FP client and OUT to DAW.
+	final private Midi mMidiIn; // In from DAW and OUT to FP client.
+
 	final private IView mView;
 
 	final private DataInputStream in;
@@ -40,10 +41,12 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 
 	final private MidiReceiver mMidiReceiver;
 
-	public ClientSocketThread(Socket client, Midi midi, IView view) throws IOException {
+	public ClientSocketThread(Socket client, IView view) throws IOException {
 		this.client = client;
-		this.midi = midi;
 		mView = view;
+		
+		mMidiOut = new Midi();
+		mMidiIn = new Midi();
 
 		in = new DataInputStream(client.getInputStream());
 		out = new DataOutputStream(client.getOutputStream());
@@ -90,7 +93,7 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 	}
 
 	public void onVersion(Version clientVersion) throws Exception {//byte command, DataInputStream in, DataOutputStream out) throws Exception {
-		mView.print("Client version: " + clientVersion.message);
+		mView.print("Client version: " + clientVersion.getVersion());
 
 		Version version = new Version(FingerPlayServer.VERSION);
 
@@ -99,13 +102,18 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 
 	public void onMidiSocketCommand(MidiSocketCommand socketCommand) throws Exception {
 		mView.print("midiCommand = " + socketCommand.midiCommand + " channel = " + socketCommand.channel + ", data1 = " + socketCommand.data1 + " data2 = " + socketCommand.data2);
-		synchronized (midi) {
-			midi.sendShortMessage(socketCommand.midiCommand, socketCommand.channel, socketCommand.data1, socketCommand.data2);						
+		synchronized (mMidiOut) {
+			mMidiOut.sendShortMessage(socketCommand.midiCommand, socketCommand.channel, socketCommand.data1, socketCommand.data2);						
 		}
 	}
 
 	public void onRequestMidiDeviceList(RequestMidiDeviceList request) throws Exception {
-		String[] deviceNames = Midi.getDeviceNames(false, true);
+
+		String[] deviceNames;
+		if (request.getType() == DeviceList.TYPE_OUT)
+			deviceNames = Midi.getDeviceNames(false, true);
+		else
+			deviceNames = Midi.getDeviceNames(true, false);
 
 		String allDevices = "";
 		for (int i=0; i<deviceNames.length; i++) {
@@ -114,30 +122,35 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 		if (deviceNames.length > 0)
 			allDevices = allDevices.substring(0, allDevices.length()-1);
 
-		DeviceList deviceList = new DeviceList( allDevices );
+		DeviceList deviceList = new DeviceList( request.getType(), allDevices );
 
 		mWriter.write(deviceList);
 	}
 
 	public void onSetMidiDevice(SetMidiDevice ssm) throws Exception {
 
-		String device = ssm.message;
+
+		int type = ssm.getType();
+		String device = ssm.getDevice();
+
+		Midi midi = (type==DeviceList.TYPE_OUT) ? mMidiOut : mMidiIn;
 
 		mView.print("Set MIDI Device: " + device);
 		synchronized (midi) {
 			midi.close();
-			MidiDevice midiDeviceIN = midi.open(device, false); // true = bForOutput
-			
-			mView.print("midiDeviceIN = " + midiDeviceIN);
+			MidiDevice midiDevice = midi.open(device, (type==DeviceList.TYPE_OUT) ? false : true);
 
-			if (midiDeviceIN != null) {
-				Transmitter	t = midiDeviceIN.getTransmitter();
+			mView.print("midiDevice = " + midiDevice);
+
+			if (midiDevice != null) {
+				Transmitter	t = midiDevice.getTransmitter();
 				if (t != null)
 					t.setReceiver(mMidiReceiver);
 			}
 
 			// Out device doesn't necessarily have the same name as the input device.
-			// But maybe it doesn't matter?
+			// And it does matter so we need to send two separate commands.
+			/*
 			MidiDevice midiDeviceOUT = midi.open(device, true); // true = bForOutput
 			mView.print("midiDeviceOUT = " + midiDeviceOUT);
 
@@ -145,10 +158,12 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 				Transmitter	t = midiDeviceOUT.getTransmitter();
 				if (t != null)
 					t.setReceiver(mMidiReceiver);
-			}
+			}*/
 
 		}
 	}
+
+
 
 	public void onDeviceList(DeviceList deviceList) throws Exception {
 		

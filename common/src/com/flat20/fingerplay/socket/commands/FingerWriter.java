@@ -70,7 +70,7 @@ public class FingerWriter {
 	}
 
 	private int encode(SocketStringCommand socketCommand) {
-		final String message = socketCommand.message;
+		final String message = socketCommand.getMessage();
 		final int size = message.length() + 1 + 4; // + byte + int
 
 		//final ByteBuffer data = ByteBuffer.allocate( size ); // command, length

@@ -2,7 +2,6 @@ package com.flat20.fingerplay;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,9 +11,6 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 public class Updater {
 
@@ -30,7 +26,8 @@ public class Updater {
 
 			//TODO only download if we have a new version.
 
-				boolean result = httpGetFile("thesundancekid.net", "/FingerPlay/FingerPlayServer.zip", "FingerPlayServer-" + version + ".zip");
+				//boolean result = 
+				httpGetFile("thesundancekid.net", "/FingerPlay/FingerPlayServer.zip", "FingerPlayServer-" + version + ".zip");
 				System.out.println("Downloaded FingerPlayServer-" + version + ".zip");
 			//unzip("FingerPlayServer-" + version + ".zip");
 				return true;
@@ -137,7 +134,7 @@ public class Updater {
 		}
 		return false;
 	}
-
+/*
 	private static final void unzip(String filename) {
 		Enumeration entries;
 		ZipFile zipFile;
@@ -168,7 +165,7 @@ public class Updater {
 			return;
 		}
 	}
-
+*/
 	public static final void copyInputStream(InputStream in, OutputStream out) throws IOException {
 		byte[] buffer = new byte[1024];
 		int len;

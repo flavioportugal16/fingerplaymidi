@@ -10,6 +10,7 @@ import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.fingerplay.network.ConnectionManager;
 import com.flat20.fingerplay.socket.commands.SocketCommand;
 import com.flat20.fingerplay.socket.commands.SocketStringCommand;
+import com.flat20.fingerplay.socket.commands.misc.DeviceList;
 import com.flat20.fingerplay.socket.commands.misc.RequestMidiDeviceList;
 import com.flat20.fingerplay.socket.commands.misc.SetMidiDevice;
 import com.flat20.fingerplay.socket.commands.misc.Version;
@@ -73,14 +74,20 @@ public class SettingsController {
 
     	public void onSocketCommand(SocketCommand sm) {
     		if (sm.command == SocketCommand.COMMAND_MIDI_DEVICE_LIST) {
-    			SocketStringCommand ssm = (SocketStringCommand) sm;
-    			String[] deviceNames = ssm.message.split("%");
-    			mModel.setMidiDevices(deviceNames);
-    			if (mModel.midiDevice != null)
-    				setMidiDevice(mModel.midiDevice);
+    			DeviceList ssm = (DeviceList) sm;
+    			String[] deviceNames = ssm.getDeviceList().split("%");
+    			if (ssm.getType() == DeviceList.TYPE_OUT) {
+    				mModel.setMidiDevicesOut(deviceNames);
+    				if (mModel.midiDeviceOut != null)
+    					setMidiDevice(DeviceList.TYPE_OUT, mModel.midiDeviceOut);
+    			} else {
+    				mModel.setMidiDevicesIn(deviceNames);
+    				if (mModel.midiDeviceIn != null)
+    					setMidiDevice(DeviceList.TYPE_IN, mModel.midiDeviceIn);
+    			}
     		} else if (sm.command == SocketCommand.COMMAND_VERSION) {
     			Version version = (Version) sm;
-    			Log.i("Settings", "version = " + version.message);
+    			Log.i("Settings", "version = " + version.getVersion());
     		}
     	}
 
@@ -101,12 +108,15 @@ public class SettingsController {
     	}
     }
 
-    protected void setMidiDevice(String deviceName) {
+    protected void setMidiDevice(int type, String deviceName) {
     	if (mConnectionManager.isConnected()) {
-    		SetMidiDevice setDevice = new SetMidiDevice(deviceName);
+    		SetMidiDevice setDevice = new SetMidiDevice(DeviceList.TYPE_OUT, deviceName);
     		mConnectionManager.send(setDevice);
     	}
-		mModel.setMidiDevice(deviceName);
+    	if (type == DeviceList.TYPE_OUT)
+    		mModel.setMidiDeviceOut(deviceName);
+    	else
+    		mModel.setMidiDeviceIn(deviceName);
 	}
 
     protected void serverConnect() {

@@ -44,17 +44,24 @@
 	</PreferenceCategory>
 
     <PreferenceCategory android:title="MIDI">
-            <ListPreference  
-                android:key="settings_midi_out"
-                android:title="MIDI Out Device"
-                android:summary="Select a device."
-                android:dialogTitle="Select a MIDI Device"  
-            />
+		<ListPreference  
+			android:key="settings_midi_out"
+			android:title="MIDI Out Device"
+			android:summary="Select a device."
+			android:dialogTitle="Select a MIDI Device" 
+		/>
+		<ListPreference  
+			android:key="settings_midi_in"
+			android:title="MIDI In Device"
+			android:summary="Select a device."
+			android:dialogTitle="Select a MIDI Device" 
+		/>
         <PreferenceScreen
         	android:key="settings_midi_controllers"
             android:title="Configure MIDI Controllers"  
             android:summary="Send MIDI messages to the server."
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+		/>
 	</PreferenceCategory>
 
 </PreferenceScreen>

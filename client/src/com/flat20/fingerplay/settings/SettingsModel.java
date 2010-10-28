@@ -30,8 +30,10 @@ public class SettingsModel {
 	public int state = 0;
 	public int serverType = -1;
 	public String serverAddress = null;
-	public String midiDevice = null;
-	public String[] midiDevices = null;
+	public String midiDeviceOut = null;
+	public String[] midiDevicesOut = null;
+	public String midiDeviceIn = null;
+	public String[] midiDevicesIn = null;
 	public String layoutFile = null;
 	public String[] layoutFiles = null;
 
@@ -54,7 +56,8 @@ public class SettingsModel {
 		String type = mSharedPreferences.getString("settings_server_type", "-1");
 		serverType = Integer.parseInt(type);
 		serverAddress = mSharedPreferences.getString("settings_server_address", null);
-		midiDevice = mSharedPreferences.getString("settings_midi_out", null);
+		midiDeviceOut = mSharedPreferences.getString("settings_midi_out", null);
+		midiDeviceIn = mSharedPreferences.getString("settings_midi_in", null);
 		layoutFile = mSharedPreferences.getString("settings_layout_file", null);
 
         if (serverType != -1)
@@ -83,13 +86,23 @@ public class SettingsModel {
 		updateView();
 	}
 
-	public void setMidiDevices(String[] value) {
-		midiDevices = value;
+	public void setMidiDevicesOut(String[] value) {
+		midiDevicesOut = value;
 		updateView();
 	}
 
-	public void setMidiDevice(String value) {
-		midiDevice = value;
+	public void setMidiDeviceOut(String value) {
+		midiDeviceOut = value;
+		updateView();
+	}
+
+	public void setMidiDevicesIn(String[] value) {
+		midiDevicesIn = value;
+		updateView();
+	}
+
+	public void setMidiDeviceIn(String value) {
+		midiDeviceIn = value;
 		updateView();
 	}
 

@@ -7,16 +7,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 
-import com.flat20.fingerplay.Midi;
 import com.flat20.fingerplay.socket.ClientSocketThread;
 import com.flat20.fingerplay.socket.MulticastServer;
 import com.flat20.fingerplay.socket.commands.SocketCommand;
 import com.flat20.fingerplay.view.ConsoleView;
 import com.flat20.fingerplay.view.IView;
-import com.flat20.fingerplay.view.MainWindow;
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalAttribute;
 
 public class FingerPlayServer implements Runnable{
 
@@ -26,7 +22,7 @@ public class FingerPlayServer implements Runnable{
 	public static final String MULTICAST_SERVERIP = "230.0.0.1";
 	public static final int MULTICAST_SERVERPORT = 9013;
 
-	private Midi midi;
+	//private Midi midi;
 
 	private static String mLocalAddress = null;
 	private static int mLocalPort = -1;
@@ -39,7 +35,8 @@ public class FingerPlayServer implements Runnable{
 			// Check if there's a new version of the server online
 			// Also tries to grab the localIP from the socket.
 
-			boolean result = Updater.update(VERSION);
+			//boolean result = 
+			Updater.update(VERSION);
 			/*
 			if (result) {
 				System.out.println("FingerPlayServer updated. Please restart.");
@@ -48,12 +45,13 @@ public class FingerPlayServer implements Runnable{
 
 			// 
 			//SocketStringCommand sm = new SetMidiDeviceCommand("apa");
-			SocketCommand s = new SocketCommand();
+			// lame..
+			new SocketCommand();
 
-			
+
  			// Open MIDI Device.
 
-			midi = new Midi();
+			//midi = new Midi();
 
 			//Midi.listDevices(true, true, true);
 
@@ -109,7 +107,7 @@ public class FingerPlayServer implements Runnable{
 			while (true) {
 
 				Socket client = serverSocket.accept();
-				ClientSocketThread st = new ClientSocketThread(client, midi, view);
+				ClientSocketThread st = new ClientSocketThread(client, view);
 				Thread thread = new Thread( st );
 				thread.start();
 

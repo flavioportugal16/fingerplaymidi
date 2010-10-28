@@ -35,7 +35,7 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
     private ConfigManager mConfigManager;
 
     private Logo mLogo;
- 
+
     private NavigationOverlay mNavigationOverlay; 
 
 
@@ -102,16 +102,6 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 			e.printStackTrace();
 		}
 
-
-        /*
-        
-        if (xmlFile != null && xmlFile.canRead())
-        	LayoutManager.loadXML(mMidiWidgetsContainer, xmlFile, mWidth, mHeight);
-        else
-        	LayoutManager.loadXML(mMidiWidgetsContainer, getApplicationContext().getResources().openRawResource(R.raw.layout_default), mWidth, mHeight);
-*/
-        // Add all midi controllers to the manager
-        //mMidiControllerManager.addMidiControllersIn(mMidiWidgetsContainer);
 
         mRenderer.addSprite( mMidiWidgetsContainer );
  
