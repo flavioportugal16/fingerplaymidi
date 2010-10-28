@@ -17,20 +17,22 @@ import com.flat20.fingerplay.R;
 import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.fingerplay.midicontrollers.Parameter;
 import com.flat20.fingerplay.network.ConnectionManager;
+import com.flat20.fingerplay.socket.commands.misc.DeviceList;
 
 public class SettingsView extends PreferenceActivity implements Preference.OnPreferenceChangeListener { 
 
 	private SettingsModel mModel;
 	private SettingsController mController;
 
-	
+
     protected ListPreference mServerTypes;
     protected CheckBoxPreference mServerConnectCheckBox;
     protected EditTextPreference mServerAddressEditText;
 
     public ListPreference mLayoutFiles;
 
-    protected ListPreference mDevices;
+    protected ListPreference mDevicesOut;
+    protected ListPreference mDevicesIn;
     protected PreferenceScreen mMidiSettings;
 
 
@@ -50,14 +52,15 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 		mServerConnectCheckBox.setOnPreferenceChangeListener(this);
 		mServerAddressEditText = (EditTextPreference) findPreference( "settings_server_address" );
 		mServerAddressEditText.setOnPreferenceChangeListener(this);
-		mDevices = (ListPreference) findPreference( "settings_midi_out" );
-		mDevices.setOnPreferenceChangeListener(this);
+		mDevicesOut = (ListPreference) findPreference( "settings_midi_out" );
+		mDevicesOut.setOnPreferenceChangeListener(this);
+		mDevicesIn = (ListPreference) findPreference( "settings_midi_in" );
+		mDevicesIn.setOnPreferenceChangeListener(this);
 		mMidiSettings = (PreferenceScreen) findPreference( "settings_midi_controllers" );
 		mLayoutFiles = (ListPreference) findPreference( "settings_layout_file" );
 		mLayoutFiles.setOnPreferenceChangeListener(this);
 
-		// init MVC
-        //mView = new SettingsView(this);
+		// init MVC - Would be nice if each setting had its own model/view/controller
 		mController = new SettingsController(this);
 		setController(mController);
 		mModel = SettingsModel.getInstance();
@@ -166,22 +169,38 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 
 				// Display MIDI Devices
 				if (mModel.serverType == ConnectionManager.CONNECTION_TYPE_FINGERSERVER) {
-					if (mModel.midiDevices != null) {
-						CharSequence[] entries = new CharSequence[mModel.midiDevices.length];
-						CharSequence[] entryValues = new CharSequence[mModel.midiDevices.length];
+					if (mModel.midiDevicesOut != null) {
+						CharSequence[] entries = new CharSequence[mModel.midiDevicesOut.length];
+						CharSequence[] entryValues = new CharSequence[mModel.midiDevicesOut.length];
 						for (int i=0; i<entries.length; i++) {
-							entries[i] = mModel.midiDevices[i];
-							entryValues[i] = mModel.midiDevices[i];
+							entries[i] = mModel.midiDevicesOut[i];
+							entryValues[i] = mModel.midiDevicesOut[i];
 						}
 
-						mDevices.setEnabled(true);
-						mDevices.setEntries(entries);
-						mDevices.setEntryValues(entryValues);
+						mDevicesOut.setEnabled(true);
+						mDevicesOut.setEntries(entries);
+						mDevicesOut.setEntryValues(entryValues);
 					}
 
-					if (mModel.midiDevice != null) {
+					// Enable individual controller settings if we have a MIDI device set. 
+					if (mModel.midiDeviceOut != null) {
 						mMidiSettings.setEnabled(true);
 					}
+
+					// List IN devices
+					if (mModel.midiDevicesIn != null) {
+						CharSequence[] entries = new CharSequence[mModel.midiDevicesIn.length];
+						CharSequence[] entryValues = new CharSequence[mModel.midiDevicesIn.length];
+						for (int i=0; i<entries.length; i++) {
+							entries[i] = mModel.midiDevicesIn[i];
+							entryValues[i] = mModel.midiDevicesIn[i];
+						}
+
+						mDevicesIn.setEnabled(true);
+						mDevicesIn.setEntries(entries);
+						mDevicesIn.setEntryValues(entryValues);
+					}
+
 				}
 
 				break;
@@ -197,7 +216,8 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 				mServerConnectCheckBox.setTitle("Connect to Server");
 	       		mServerConnectCheckBox.setSummary("Disconnected");
 
-	       		mDevices.setEnabled(false);
+	       		mDevicesOut.setEnabled(false);
+	       		mDevicesIn.setEnabled(false);
 	       		mMidiSettings.setEnabled(false);
 				break;
 		}
@@ -218,13 +238,21 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
     	mServerAddressEditText.setSummary( serverAddress );
 
 		// We want to update the summary even if we're disconnected
-		if (mModel.midiDevice != null) {
-    		mDevices.setValue( mModel.midiDevice );
-	    	mDevices.setSummary( mModel.midiDevice );
-		} else if (mModel.midiDevices != null)
-			mDevices.setSummary( "None selected (" + mModel.midiDevices.length + ")" );
+		if (mModel.midiDeviceOut != null) {
+    		mDevicesOut.setValue( mModel.midiDeviceOut );
+	    	mDevicesOut.setSummary( mModel.midiDeviceOut );
+		} else if (mModel.midiDevicesOut != null)
+			mDevicesOut.setSummary( "None selected (" + mModel.midiDevicesOut.length + ")" );
 		else
-			mDevices.setSummary( "None selected" );
+			mDevicesOut.setSummary( "None selected" );
+
+		if (mModel.midiDeviceIn != null) { // Set IN device text
+    		mDevicesIn.setValue( mModel.midiDeviceIn );
+    		mDevicesIn.setSummary( mModel.midiDeviceIn );
+		} else if (mModel.midiDevicesIn != null)
+			mDevicesIn.setSummary( "None selected (" + mModel.midiDevicesOut.length + ")" );
+		else
+			mDevicesIn.setSummary( "None selected" );
 
 		// Update the layouts
 		if (mModel.layoutFiles != null) {
@@ -253,8 +281,11 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 		} else if (preference == mServerAddressEditText) {
 			mModel.setServerAddress((String) newValue);
 			return true;
-		} else if (preference == mDevices) {
-			mController.setMidiDevice((String) newValue);
+		} else if (preference == mDevicesOut) {
+			mController.setMidiDevice(DeviceList.TYPE_OUT, (String) newValue);
+			return true;
+		} else if (preference == mDevicesIn) {
+			mController.setMidiDevice(DeviceList.TYPE_IN, (String) newValue);
 			return true;
 		} else if (preference == mLayoutFiles) {
 			mModel.setLayoutFile((String) newValue);

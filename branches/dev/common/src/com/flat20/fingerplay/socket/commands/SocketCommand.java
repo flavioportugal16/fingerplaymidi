@@ -17,14 +17,12 @@ public class SocketCommand {
 	// Client sets the MIDI device used by the server.
 	public final static byte COMMAND_SET_MIDI_DEVICE = 0x05; 
 
-	// Client tells server if a control needs smoothing.
-	public final static byte COMMAND_SET_SMOOTHING = 0x06; 
+	// Client sets the MIDI device used by the server.
+	public final static byte COMMAND_SET_MIDI_DEVICE_IN = 0x06; 
 
-	// Client tells server if a control needs smoothing.
 	public final static byte COMMAND_VERSION = 0x07; 
 
 	public byte command;
-	//public byte[] data; //First byte contains the command;
 
 	public SocketCommand() {
 		
@@ -33,45 +31,4 @@ public class SocketCommand {
 	public SocketCommand(byte command) {
 		this.command = command;
 	}
-/*
-	// Create a command from incoming data.
-	public SocketCommand(byte[] data) {
-		this.command = data[0];
-		this.data = data;
-	}
-
-	// Create a command to send.
-	public SocketCommand(byte command, byte[] data) {
-		this.command = command;
-		this.data = data;
-		this.data[0] = command;
-	}
-
-	public SocketCommand(byte command) {
-		this.command = command;
-		this.data = new byte[1];
-		this.data[0] = this.command;
-	}
-*/
-	/*
-	public void encode() {
-	}*/
-/*
-	public byte[] copyParameters() {
-		byte[] parameters = new byte[data.length-1];
-		System.arraycopy(data, 1, parameters, 0, data.length-1);
-		return parameters;
-	}
-
-	public byte[] copyParameters(int length) {
-		byte[] parameters = new byte[length-1];
-		System.arraycopy(data, 1, parameters, 0, length-1);
-		return parameters;
-	}
-
-	public String getParametersAsString(int dataLength) {
-		byte[] parameters = copyParameters(dataLength);
-		return new String(parameters);
-	}
-*/
 }

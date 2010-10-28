@@ -1,6 +1,7 @@
 package com.flat20.fingerplay.socket.commands;
 
 import java.io.DataInputStream;
+
 import java.io.IOException;
 import java.net.SocketException;
 
@@ -46,7 +47,7 @@ public class FingerReader {
 			case SocketCommand.COMMAND_MIDI_DEVICE_LIST:
 				mReceiver.onDeviceList( (DeviceList) decode(sDl, command) );
 				return command;
-			
+
 			case SocketCommand.COMMAND_SET_MIDI_DEVICE:
 				mReceiver.onSetMidiDevice( (SetMidiDevice) decode(sMd, command) );
 				return command;
@@ -59,15 +60,15 @@ public class FingerReader {
 		}
 		return -1;
 	}
-
+/*
 	private SocketCommand decode(SocketCommand socketCommand, byte command) {
 		socketCommand.command = command;
 		return socketCommand;
 	}
-
+*/
 	private void decode(SocketStringCommand socketCommand, byte command, int length, byte[] message) {
 		socketCommand.command = command;
-		socketCommand.message = new String(message, 0, length);
+		socketCommand.setMessage( new String(message, 0, length) );
 	}
 
 	private SocketStringCommand decode(SocketStringCommand socketCommand, byte command) throws Exception {

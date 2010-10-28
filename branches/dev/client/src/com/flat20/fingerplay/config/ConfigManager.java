@@ -10,12 +10,12 @@ import android.os.Environment;
 import com.flat20.fingerplay.config.dto.ConfigItem;
 import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.config.dto.ConfigScreen;
+import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.fingerplay.settings.SettingsModel;
+import com.flat20.gui.widgets.Widget;
 
 /**
- * Will parse the config and notify listeners (view, MidiControllerManager)
- * when it's ready
- * 
+ * Will parse the config and notify listeners (view, MidiControllerManager).
  *  
  * @author andreas.reuterberg
  *
@@ -26,7 +26,6 @@ public class ConfigManager {
 
     private ArrayList<IConfigUpdateListener> mListeners;
 
-    //private MidiWidgetContainer mMidiWidgetsContainer;
     private InputStream mDefaultConfigXml = null;
     private int mWidth;
     private int mHeight;
@@ -95,8 +94,9 @@ public class ConfigManager {
 			reader.parseLayout(layout); // Fills layout with info from the config file.
 
 			// Instantiate controller classes.
-			// TODO Move this
- 
+			// MidiWidgetContainer instantiates the View class but the controllers
+			// are created here. Maybe this class should do both..?
+
 	        for (ConfigScreen screen : layout.screens) {
 	        	for (ConfigItem configItem : screen.items) {
 					Class<?> ControllerClass = Class.forName( configItem.controllerClassName );
@@ -107,19 +107,26 @@ public class ConfigManager {
 					configItem.itemController = controller;
 
 					configItem.itemController.setParameters(configItem.parameters);
+
+
+					// TODO Instantiating the View class
+					// Make a parent class for Widgets which doesn't rely on IMidiController as param
+					/*
+					if (configItem.viewClassName != null) {
+						Class<?> WidgetClass = Class.forName( configItem.viewClassName );
+						Class<?>[] viewClassParams = new Class<?>[] {IMidiController.class};
+						Object[] viewObjectParams = new Object[] { configItem.itemController };
+						Constructor<?> ctor = WidgetClass.getConstructor( classParams );
+	
+						Widget widget = (Widget) ctor.newInstance(objectParams);
+					}*/
+
 	        	}
 	        }
 
 	        for (IConfigUpdateListener listener : mListeners) {
 	        	listener.onConfigUpdated(layout);
 	        }
-	        /*
-			// Add all MIDI controllers to the MidiControllerManager
-        	mMidiControllerManager.setConfigItems( layout );
-
-        	// Create Views for all items
-        	mMidiWidgetsContainer.setConfigItems( layout );
-*/
 
 		} catch (Exception e) {
 			e.printStackTrace();
