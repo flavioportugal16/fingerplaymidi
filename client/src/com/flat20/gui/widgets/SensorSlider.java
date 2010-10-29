@@ -3,8 +3,6 @@ package com.flat20.gui.widgets;
 import android.hardware.Sensor;
 import android.os.SystemClock;
 
-import com.flat20.fingerplay.midicontrollers.IMidiController;
-
 // TODO Register sensor listener inside this class?
 // Is one listener for each SensorSlider efficient or will it slow down Android?
 public class SensorSlider extends Slider {
@@ -14,8 +12,8 @@ public class SensorSlider extends Slider {
 	// Timestamp for last send.
 	private long mLastSendTime = SystemClock.uptimeMillis();
 
-	public SensorSlider(IMidiController midiController) {
-		super(midiController);
+	public SensorSlider() {
+		super();
 	}
 
 	@Override

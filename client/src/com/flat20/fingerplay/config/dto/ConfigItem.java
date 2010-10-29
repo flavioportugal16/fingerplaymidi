@@ -1,14 +1,12 @@
 package com.flat20.fingerplay.config.dto;
 
+import com.flat20.fingerplay.config.IConfigItemView;
 import com.flat20.fingerplay.config.IConfigurable;
-import java.lang.Exception;
 
-
-// config.WidgetItem? ConfigWidgetItem doesn't really specify if it is a MIDIController
-// what do we for labels?
 public class ConfigItem {
 
 	public IConfigurable itemController;
+	public IConfigItemView itemView;
 	public ConfigItemParameters parameters;
 	public String tagName;
 	public String controllerClassName;
@@ -20,16 +18,18 @@ public class ConfigItem {
 	public int height;
 
 	/**
-	 * Only works as long as IConfigurable item is still null.
+	 * Only works properly as long as IConfigurable and IView items are still null.
+	 * Otherwise it won't be a complete copy since they're passed by reference.
 	 */
 	public ConfigItem clone() {
 
-		if (itemController != null)
+		if (itemController != null && itemView != null)
 			return null;
 
 		ConfigItem copy = new ConfigItem();
 
 		copy.itemController = itemController;
+		copy.itemView = itemView;
 		if (parameters != null)
 			copy.parameters = parameters.clone();
 		copy.tagName = tagName;
@@ -43,12 +43,8 @@ public class ConfigItem {
 		return copy;
 	}
 
-	public void hej() throws Exception {
-		throw new Exception("adasd");
-	}
-
 	public String toString() {
-		return "ConfigWidget item: " + itemController + ", tagName: " + tagName + ", controllerClassName: " + controllerClassName + ", viewClassName: " + viewClassName + ", displayName: " + displayName + ", x: " + x + ", y: " + y + ", width: " + width + ", height: " + height + ", params: " + parameters;
+		return "ConfigWidget item: " + itemController + ", view: " + itemView + " tagName: " + tagName + ", controllerClassName: " + controllerClassName + ", viewClassName: " + viewClassName + ", displayName: " + displayName + ", x: " + x + ", y: " + y + ", width: " + width + ", height: " + height + ", params: " + parameters;
 	}
 
 }

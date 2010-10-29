@@ -1,6 +1,5 @@
 package com.flat20.gui.widgets;
 
-import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.gui.Materials;
 import com.flat20.gui.sprites.MaterialSprite;
 
@@ -32,8 +31,8 @@ public class Pad extends MidiWidget {
 		return null;
 	}
 */
-	public Pad(IMidiController midiController) {
-		super(midiController);
+	public Pad() {
+		super();
 
 		mBackground = new MaterialSprite(Materials.MC_BACKGROUND);
         mBackground.x = -BACKGROUND_PADDING;
