@@ -1,7 +1,6 @@
 package com.flat20.fingerplay.midicontrollers;
 
 import com.flat20.fingerplay.config.IConfigurable;
-import com.flat20.gui.widgets.MidiWidget;
 
 public interface IMidiController extends IConfigurable {
 
@@ -31,6 +30,6 @@ public interface IMidiController extends IConfigurable {
 	//public void setHold(boolean hold);
 	//public boolean isHolding();
 
-	public void setView(MidiWidget widget);
-	public MidiWidget getView();
+	//public void setView(MidiWidget widget);
+	//public MidiWidget getView();
 }

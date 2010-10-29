@@ -1,5 +1,7 @@
 package com.flat20.gui.widgets;
 
+import com.flat20.fingerplay.config.IConfigItemView;
+import com.flat20.fingerplay.config.IConfigurable;
 import com.flat20.fingerplay.midicontrollers.IMidiController;
 
 /**
@@ -7,25 +9,34 @@ import com.flat20.fingerplay.midicontrollers.IMidiController;
  * the data now. Plan is to make MidiWidgets only deal mostly with
  * UI stuff.
  * 
- * @author andreas
+ * @author andreas.reuterberg
  *
  */
-public abstract class MidiWidget extends Widget { //implements IMidiController {
+public abstract class MidiWidget extends Widget implements IConfigItemView { //implements IMidiController {
 
-	final private IMidiController mMidiController;
+	private IMidiController mMidiController;
 	
 	protected boolean mHold = false;
 
-	public MidiWidget(IMidiController midiController) {
+	public MidiWidget() {
 		super();
 
-		mMidiController = midiController;
-		mMidiController.setView(this);
+		//mMidiController = midiController;
+		//mMidiController.setView(this);
 
 		//setName(name);
 		//setControllerNumber(controllerNumber);
 	}
-	
+
+	@Override
+	public void setController(IConfigurable controller) throws Exception {
+		if (controller instanceof IMidiController) {
+			mMidiController = (IMidiController) controller;
+			mMidiController.setView(this);
+		} else
+			throw new Exception("Illegal controller assigned to MidiWidget; Must be of class IMidiController.");
+	}
+
 	public IMidiController getMidiController() {
 		return mMidiController;
 	}
@@ -39,15 +50,5 @@ public abstract class MidiWidget extends Widget { //implements IMidiController {
 	protected void release(float pressure) {
 		
 	}
-
-
-/*
-	protected IOnControlChangeListener listener;
-
-    public void setOnControlChangeListener(IOnControlChangeListener l) {
-    	listener = l;
-    }
-*/
-    
 
 }

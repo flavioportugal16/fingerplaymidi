@@ -109,17 +109,18 @@ public class ConfigManager {
 					configItem.itemController.setParameters(configItem.parameters);
 
 
-					// TODO Instantiating the View class
-					// Make a parent class for Widgets which doesn't rely on IMidiController as param
-					/*
 					if (configItem.viewClassName != null) {
-						Class<?> WidgetClass = Class.forName( configItem.viewClassName );
-						Class<?>[] viewClassParams = new Class<?>[] {IMidiController.class};
-						Object[] viewObjectParams = new Object[] { configItem.itemController };
-						Constructor<?> ctor = WidgetClass.getConstructor( classParams );
-	
-						Widget widget = (Widget) ctor.newInstance(objectParams);
-					}*/
+						Class<?> ViewClass = Class.forName( configItem.viewClassName );
+						Class<?>[] viewClassParams = new Class<?>[] {};
+						Object[] viewObjectParams = new Object[] {};
+						Constructor<?> viewCtor = ViewClass.getConstructor( viewClassParams );
+
+						IConfigItemView view = (IConfigItemView) viewCtor.newInstance( viewObjectParams );
+						view.setController( configItem.itemController );
+						configItem.itemView = view;
+
+						System.out.println("Did it work?");
+					}
 
 	        	}
 	        }

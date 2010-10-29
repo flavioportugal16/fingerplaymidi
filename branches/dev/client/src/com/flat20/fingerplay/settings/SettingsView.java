@@ -167,41 +167,6 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 
 				mServerConnectCheckBox.setTitle("Disconnect from Server");
 
-				// Display MIDI Devices
-				if (mModel.serverType == ConnectionManager.CONNECTION_TYPE_FINGERSERVER) {
-					if (mModel.midiDevicesOut != null) {
-						CharSequence[] entries = new CharSequence[mModel.midiDevicesOut.length];
-						CharSequence[] entryValues = new CharSequence[mModel.midiDevicesOut.length];
-						for (int i=0; i<entries.length; i++) {
-							entries[i] = mModel.midiDevicesOut[i];
-							entryValues[i] = mModel.midiDevicesOut[i];
-						}
-
-						mDevicesOut.setEnabled(true);
-						mDevicesOut.setEntries(entries);
-						mDevicesOut.setEntryValues(entryValues);
-					}
-
-					// Enable individual controller settings if we have a MIDI device set. 
-					if (mModel.midiDeviceOut != null) {
-						mMidiSettings.setEnabled(true);
-					}
-
-					// List IN devices
-					if (mModel.midiDevicesIn != null) {
-						CharSequence[] entries = new CharSequence[mModel.midiDevicesIn.length];
-						CharSequence[] entryValues = new CharSequence[mModel.midiDevicesIn.length];
-						for (int i=0; i<entries.length; i++) {
-							entries[i] = mModel.midiDevicesIn[i];
-							entryValues[i] = mModel.midiDevicesIn[i];
-						}
-
-						mDevicesIn.setEnabled(true);
-						mDevicesIn.setEntries(entries);
-						mDevicesIn.setEntryValues(entryValues);
-					}
-
-				}
 
 				break;
 
@@ -216,8 +181,6 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 				mServerConnectCheckBox.setTitle("Connect to Server");
 	       		mServerConnectCheckBox.setSummary("Disconnected");
 
-	       		mDevicesOut.setEnabled(false);
-	       		mDevicesIn.setEnabled(false);
 	       		mMidiSettings.setEnabled(false);
 				break;
 		}
@@ -270,6 +233,54 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
 			mLayoutFiles.setSummary( "Default" );
 		else
 			mLayoutFiles.setSummary( "/FingerPlayMIDI/<xml..>" );
+
+		
+		// Update MIDI Devices
+
+
+			//if (mModel.midiDevicesOut != null) {
+			String[] devices;
+			CharSequence[] entries;
+			CharSequence[] entryValues;
+
+			devices = (mModel.midiDevicesOut != null) ? mModel.midiDevicesOut : new String[] {""};
+
+			entries = new CharSequence[devices.length];
+			entryValues = new CharSequence[devices.length];
+			for (int i=0; i<entries.length; i++) {
+				entries[i] = devices[i];
+				entryValues[i] = devices[i];
+			}
+
+
+			mDevicesOut.setEntries(entries);
+			mDevicesOut.setEntryValues(entryValues);
+			mDevicesOut.setEnabled( (mModel.midiDevicesOut != null ) );
+
+			//}
+
+			
+			// List IN devices
+			//if (mModel.midiDevicesIn != null) {
+
+			devices = (mModel.midiDevicesIn != null) ? mModel.midiDevicesIn : new String[] {""};
+
+			entries = new CharSequence[devices.length];
+			entryValues = new CharSequence[devices.length];
+			for (int i=0; i<entries.length; i++) {
+				entries[i] = devices[i];
+				entryValues[i] = devices[i];
+			}
+
+			mDevicesIn.setEntries(entries);
+			mDevicesIn.setEntryValues(entryValues);
+
+			mDevicesIn.setEnabled( (mModel.midiDevicesIn != null) );
+
+//}
+
+			// Enable individual controller settings if we have a MIDI device set.
+			mMidiSettings.setEnabled( (mModel.midiDevicesOut != null) ); 
 
 	}
 

@@ -2,6 +2,7 @@ package com.flat20.fingerplay.midicontrollers;
 
 import java.util.HashMap;
 
+import com.flat20.fingerplay.config.IConfigItemView;
 import com.flat20.fingerplay.config.dto.ConfigItemParameters;
 import com.flat20.gui.widgets.MidiWidget;
 
@@ -15,6 +16,8 @@ public abstract class AbstractMidiController implements IMidiController {
 	
 	// The MidiWidget this controller belongs to.
 	private MidiWidget mView = null;
+	
+	
 /*
 	@Override
 	public int getControllerNumber() {
@@ -92,8 +95,11 @@ public abstract class AbstractMidiController implements IMidiController {
     }
 
 	@Override
-	public void setView(MidiWidget widget) {
-		mView = widget;
+	public void setView(IConfigItemView view) throws Exception {
+		if (view instanceof MidiWidget)
+			mView = (MidiWidget) view;
+		else
+			throw new Exception("Illegal view assigned to AbstractMidiController; Must be of class MidiWidget.");
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import android.util.Log;
 import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.fingerplay.network.ConnectionManager;
 import com.flat20.fingerplay.socket.commands.SocketCommand;
-import com.flat20.fingerplay.socket.commands.SocketStringCommand;
 import com.flat20.fingerplay.socket.commands.misc.DeviceList;
 import com.flat20.fingerplay.socket.commands.misc.RequestMidiDeviceList;
 import com.flat20.fingerplay.socket.commands.misc.SetMidiDevice;

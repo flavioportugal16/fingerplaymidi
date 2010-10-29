@@ -1,12 +1,9 @@
 package com.flat20.gui.widgets;
 
-import java.lang.reflect.Constructor;
-
 import com.flat20.fingerplay.config.IConfigUpdateListener;
 import com.flat20.fingerplay.config.dto.ConfigItem;
 import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.config.dto.ConfigScreen;
-import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.gui.animations.Animation;
 import com.flat20.gui.animations.AnimationManager;
 import com.flat20.gui.animations.Slide;
@@ -64,13 +61,18 @@ public class MidiWidgetContainer extends WidgetContainer implements IScrollable,
 	
 	    	for (ConfigItem configItem : screen.items) {
 
-				try {
+				try {/*
 					Class<?> WidgetClass = Class.forName( configItem.viewClassName );
 					Class<?>[] classParams = new Class<?>[] {IMidiController.class};
 					Object[] objectParams = new Object[] { (IMidiController) configItem.itemController };
 					Constructor<?> ctor = WidgetClass.getConstructor( classParams );
 
 					Widget widget = (Widget) ctor.newInstance(objectParams);
+					*/
+					Widget widget = null;
+					// We only want the views of type Widget for now.
+					if (configItem.itemView instanceof Widget)
+						widget = (Widget) configItem.itemView;
 
 					if (widget != null) {
 

@@ -1,6 +1,5 @@
 package com.flat20.gui.widgets;
 
-import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.gui.Materials;
 import com.flat20.gui.sprites.MaterialSprite;
 
@@ -36,8 +35,8 @@ public class XYPad extends DefaultMidiWidget {
 	int lastValueX = -1;
 	int lastValueY = -1;
 
-	public XYPad(IMidiController midiController) {
-		super(midiController);
+	public XYPad() {
+		super();
 
 		mMeter = new MaterialSprite(Materials.MC_XYPAD_INDICATOR);
 		mMeterOff = new MaterialSprite(Materials.MC_XYPAD_INDICATOR_OFF);

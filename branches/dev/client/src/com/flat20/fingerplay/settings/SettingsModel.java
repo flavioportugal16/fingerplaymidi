@@ -60,6 +60,7 @@ public class SettingsModel {
 		midiDeviceIn = mSharedPreferences.getString("settings_midi_in", null);
 		layoutFile = mSharedPreferences.getString("settings_layout_file", null);
 
+		
         if (serverType != -1)
         	ConnectionManager.getInstance().setConnection( serverType );
 	}

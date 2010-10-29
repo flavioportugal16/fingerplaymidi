@@ -3,7 +3,6 @@ package com.flat20.gui.widgets;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.SystemClock;
-import com.flat20.fingerplay.midicontrollers.IMidiController;
 
 // TODO Register sensor listener inside this class?
 // Is one listener for each SensorSlider efficient or will it slow down Android?
@@ -16,8 +15,8 @@ public class SensorXYPad extends XYPad {
 	
 	private final float mVal[] = new float[3];
 
-	public SensorXYPad(IMidiController midiController) {
-		super(midiController);
+	public SensorXYPad() {
+		super();
 	}
 
 	@Override
