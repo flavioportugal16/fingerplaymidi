@@ -127,7 +127,7 @@ public class ConnectionManager {
     			listener.onSocketCommand(socketCommand);
     	}
     };
-    final OnSocketCommand mOnSocketCommand = new OnSocketCommand();
+    //final OnSocketCommand mOnSocketCommand = new OnSocketCommand();
 
     final Runnable mOnDisconnect = new Runnable() {
     	public void run() {
@@ -166,8 +166,9 @@ public class ConnectionManager {
     	}
 
     	public void onSocketCommand(SocketCommand socketCommand) {
-    		mOnSocketCommand.socketCommand = socketCommand;
-    		mHandler.post(mOnSocketCommand);
+    		OnSocketCommand osc = new OnSocketCommand();
+    		osc.socketCommand = socketCommand;
+    		mHandler.post( osc );
     	}
 
     };

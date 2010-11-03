@@ -11,17 +11,7 @@ public class SetMidiDevice extends SocketStringCommand {
 	public SetMidiDevice() {
 		super(SocketCommand.COMMAND_SET_MIDI_DEVICE);
 	}
-/*
-	public SetMidiDevice(String encoded) {
-		super(SocketCommand.COMMAND_SET_MIDI_DEVICE, encoded);
 
-		int firstBreak = this.message.indexOf("%");
-		mType = this.message.substring(0, firstBreak);
-		mDevice = this.message.substring(firstBreak);
-		System.out.println(mType + ", " + mDevice);
-
-	}
-*/
 	public SetMidiDevice(int type, String device) {
 		super(SocketCommand.COMMAND_SET_MIDI_DEVICE, type + "%" + device);
 
@@ -33,20 +23,20 @@ public class SetMidiDevice extends SocketStringCommand {
 	}
 
 	public void setMessage(String message) {
-		int firstBreak = this.message.indexOf("%");
-		mType = this.message.substring(0, firstBreak);
-		mDevice = this.message.substring(firstBreak);
-		System.out.println(mType + ", " + mDevice);
+		super.setMessage(message);
+		int firstBreak = message.indexOf("%");
+		mType = message.substring(0, firstBreak);
+		mDevice = message.substring(firstBreak+1);
 	}
 
 
 	public int getType() {
-		if ("out".equals(message))
+		if (DeviceList.TYPE_OUT_STRING.equals(mType))
 			return DeviceList.TYPE_OUT;
-		else if ("in".equals(message))
+		else if (DeviceList.TYPE_IN_STRING.equals(mType))
 			return DeviceList.TYPE_IN;
 		else
-			return DeviceList.TYPE_IN;
+			return -1;
 	}
 	
 	public String getDevice() {

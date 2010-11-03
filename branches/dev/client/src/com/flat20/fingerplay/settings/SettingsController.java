@@ -35,7 +35,8 @@ public class SettingsController {
 		// TODO: Just call requestMidiDeviceList() and set STATE_CONNECTED like it should be.
 		if (mModel.state == SettingsModel.STATE_CONNECTING_SUCCESS) {
 			mModel.setState(SettingsModel.STATE_CONNECTED);
-			requestMidiDeviceList();
+			requestMidiDeviceList(DeviceList.TYPE_OUT);
+			requestMidiDeviceList(DeviceList.TYPE_IN);
 		}
 
 		// Get the layout XML files from the sdcard. 
@@ -54,8 +55,10 @@ public class SettingsController {
     		if (mConnectionManager.isConnected()) {
     			mModel.setState(SettingsModel.STATE_CONNECTING_SUCCESS);
     			mModel.setState(SettingsModel.STATE_CONNECTED);
-    			if (mModel.serverType == ConnectionManager.CONNECTION_TYPE_FINGERSERVER)
-    				requestMidiDeviceList();
+    			if (mModel.serverType == ConnectionManager.CONNECTION_TYPE_FINGERSERVER) {
+    				requestMidiDeviceList(DeviceList.TYPE_IN);
+    				requestMidiDeviceList(DeviceList.TYPE_OUT);
+    			}
     		} else {
     			mModel.setState(SettingsModel.STATE_CONNECTING_FAIL);
     			mModel.setState(SettingsModel.STATE_DISCONNECTED);
@@ -73,7 +76,8 @@ public class SettingsController {
 
     	public void onSocketCommand(SocketCommand sm) {
     		if (sm.command == SocketCommand.COMMAND_MIDI_DEVICE_LIST) {
-    			DeviceList ssm = (DeviceList) sm;
+    			final DeviceList ssm = (DeviceList) sm;
+    			Log.i("SettingsController", "" + sm);
     			String[] deviceNames = ssm.getDeviceList().split("%");
     			if (ssm.getType() == DeviceList.TYPE_OUT) {
     				mModel.setMidiDevicesOut(deviceNames);
@@ -100,16 +104,17 @@ public class SettingsController {
 		mModel.setServerType( connectionType );
     }
 
-    protected void requestMidiDeviceList() {
+    protected void requestMidiDeviceList(int type) {
     	if (mConnectionManager.isConnected()) {
-    		RequestMidiDeviceList sm = new RequestMidiDeviceList();
+    		RequestMidiDeviceList sm = new RequestMidiDeviceList(type);
+    		System.out.println("requestMidiDeviceList" + type);
     		mConnectionManager.send(sm);
     	}
     }
-
+ 
     protected void setMidiDevice(int type, String deviceName) {
     	if (mConnectionManager.isConnected()) {
-    		SetMidiDevice setDevice = new SetMidiDevice(DeviceList.TYPE_OUT, deviceName);
+    		SetMidiDevice setDevice = new SetMidiDevice(type, deviceName);
     		mConnectionManager.send(setDevice);
     	}
     	if (type == DeviceList.TYPE_OUT)

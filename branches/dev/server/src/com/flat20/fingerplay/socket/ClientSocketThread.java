@@ -9,6 +9,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Transmitter;
 
 import com.flat20.fingerplay.FingerPlayServer;
@@ -55,7 +56,6 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 		mMidiReceiver = new MidiReceiver(this);
 
 		//mBuffer = new byte[ 0xFFFF ]; // absolute maximum length is 65535
-		mView.print("hello");
 	}
 
 	public void run() {
@@ -129,36 +129,28 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 
 	public void onSetMidiDevice(SetMidiDevice ssm) throws Exception {
 
-
 		int type = ssm.getType();
 		String device = ssm.getDevice();
 
 		Midi midi = (type==DeviceList.TYPE_OUT) ? mMidiOut : mMidiIn;
 
-		mView.print("Set MIDI Device: " + device);
 		synchronized (midi) {
 			midi.close();
-			MidiDevice midiDevice = midi.open(device, (type==DeviceList.TYPE_OUT) ? false : true);
+			MidiDevice midiDevice = midi.open(device, (type==DeviceList.TYPE_OUT) ? true : false);
 
-			mView.print("midiDevice = " + midiDevice);
+			mView.print("onSetMidiDevice. type: " + type + " name: " + device + " returned midiDevice = " + midiDevice);
 
 			if (midiDevice != null) {
-				Transmitter	t = midiDevice.getTransmitter();
-				if (t != null)
-					t.setReceiver(mMidiReceiver);
-			}
+				try {
+					Transmitter	t = midiDevice.getTransmitter();
+					if (t != null)
+						t.setReceiver(mMidiReceiver);
+				} catch (MidiUnavailableException e) {
+					mView.print("MIDI Device: " + device + " unavailable.");
+				}
+			} else
+				mView.print("Unable to open " + device + ".");
 
-			// Out device doesn't necessarily have the same name as the input device.
-			// And it does matter so we need to send two separate commands.
-			/*
-			MidiDevice midiDeviceOUT = midi.open(device, true); // true = bForOutput
-			mView.print("midiDeviceOUT = " + midiDeviceOUT);
-
-			if (midiDeviceOUT != null) {
-				Transmitter	t = midiDeviceOUT.getTransmitter();
-				if (t != null)
-					t.setReceiver(mMidiReceiver);
-			}*/
 
 		}
 	}
