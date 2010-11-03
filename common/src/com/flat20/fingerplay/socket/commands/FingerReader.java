@@ -20,9 +20,9 @@ public class FingerReader {
 
 	final private MidiSocketCommand sMss = new MidiSocketCommand();
 
-	final private DeviceList sDl = new DeviceList();
-	final private RequestMidiDeviceList sRmdl = new RequestMidiDeviceList();
-	final private SetMidiDevice sMd = new SetMidiDevice();
+	//final private DeviceList sDl = new DeviceList();
+	//final private RequestMidiDeviceList sRmdl = new RequestMidiDeviceList();
+	//final private SetMidiDevice sMd = new SetMidiDevice();
 	final private Version sV = new Version();
 
 	public FingerReader(DataInputStream in, IReceiver receiver) {
@@ -34,29 +34,28 @@ public class FingerReader {
 
 		byte command = mIn.readByte();
 
-		// commands[COMMAND_ID] = SocketCommand ?
 		switch (command) {
 			case SocketCommand.COMMAND_MIDI_SHORT_MESSAGE:
 				mReceiver.onMidiSocketCommand( decode(sMss, command) );
 				return command;
 			
 			case SocketCommand.COMMAND_REQUEST_MIDI_DEVICE_LIST:
-				mReceiver.onRequestMidiDeviceList( (RequestMidiDeviceList) decode(sRmdl, command) );
+				mReceiver.onRequestMidiDeviceList( (RequestMidiDeviceList) decode(new RequestMidiDeviceList(), command) );
 				return command;
 			
 			case SocketCommand.COMMAND_MIDI_DEVICE_LIST:
-				mReceiver.onDeviceList( (DeviceList) decode(sDl, command) );
+				mReceiver.onDeviceList( (DeviceList) decode(new DeviceList(), command) );
 				return command;
 
 			case SocketCommand.COMMAND_SET_MIDI_DEVICE:
-				mReceiver.onSetMidiDevice( (SetMidiDevice) decode(sMd, command) );
+				mReceiver.onSetMidiDevice( (SetMidiDevice) decode(new SetMidiDevice(), command) );
 				return command;
 
 			case SocketCommand.COMMAND_VERSION:
 				mReceiver.onVersion( (Version) decode(sV, command) );
 				return command;
 			default:
-				System.out.println("Unknown command: " + command);
+				System.out.println("Unknown command: " + command + String.valueOf(command));
 		}
 		return -1;
 	}

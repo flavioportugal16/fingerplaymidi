@@ -10,9 +10,7 @@ import android.os.Environment;
 import com.flat20.fingerplay.config.dto.ConfigItem;
 import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.config.dto.ConfigScreen;
-import com.flat20.fingerplay.midicontrollers.IMidiController;
 import com.flat20.fingerplay.settings.SettingsModel;
-import com.flat20.gui.widgets.Widget;
 
 /**
  * Will parse the config and notify listeners (view, MidiControllerManager).
@@ -118,8 +116,6 @@ public class ConfigManager {
 						IConfigItemView view = (IConfigItemView) viewCtor.newInstance( viewObjectParams );
 						view.setController( configItem.itemController );
 						configItem.itemView = view;
-
-						System.out.println("Did it work?");
 					}
 
 	        	}

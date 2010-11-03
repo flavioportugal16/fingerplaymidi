@@ -213,7 +213,7 @@ public class SettingsView extends PreferenceActivity implements Preference.OnPre
     		mDevicesIn.setValue( mModel.midiDeviceIn );
     		mDevicesIn.setSummary( mModel.midiDeviceIn );
 		} else if (mModel.midiDevicesIn != null)
-			mDevicesIn.setSummary( "None selected (" + mModel.midiDevicesOut.length + ")" );
+			mDevicesIn.setSummary( "None selected (" + mModel.midiDevicesIn.length + ")" );
 		else
 			mDevicesIn.setSummary( "None selected" );
 

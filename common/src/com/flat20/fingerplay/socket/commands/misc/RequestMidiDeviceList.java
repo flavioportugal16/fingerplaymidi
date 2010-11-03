@@ -4,21 +4,21 @@ import com.flat20.fingerplay.socket.commands.SocketCommand;
 import com.flat20.fingerplay.socket.commands.SocketStringCommand;
 
 public class RequestMidiDeviceList extends SocketStringCommand {
-	
+
 	public RequestMidiDeviceList() {
 		super(SocketCommand.COMMAND_REQUEST_MIDI_DEVICE_LIST);
 	}
 
-	public RequestMidiDeviceList(String deviceType) {
-		super(SocketCommand.COMMAND_REQUEST_MIDI_DEVICE_LIST, deviceType);
+	public RequestMidiDeviceList(int deviceType) {
+		super(SocketCommand.COMMAND_REQUEST_MIDI_DEVICE_LIST, (deviceType==DeviceList.TYPE_OUT) ? "out" : "in");
 	}
 
 	public int getType() {
-		if ("out".equals(message))
+		if (DeviceList.TYPE_OUT_STRING.equals(message))
 			return DeviceList.TYPE_OUT;
-		else if ("in".equals(message))
+		else if (DeviceList.TYPE_IN_STRING.equals(message))
 			return DeviceList.TYPE_IN;
 		else
-			return DeviceList.TYPE_IN;
+			return -1;
 	}
 }

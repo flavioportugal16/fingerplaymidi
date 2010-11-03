@@ -272,8 +272,9 @@ public class FingerServerConnection extends Connection implements IReceiver {
 
     @Override
 	public void onDeviceList(DeviceList socketCommand) throws Exception {
-		if (listener != null)
+		if (listener != null) {
 			listener.onSocketCommand(socketCommand);
+		}
 	}
 
 	@Override

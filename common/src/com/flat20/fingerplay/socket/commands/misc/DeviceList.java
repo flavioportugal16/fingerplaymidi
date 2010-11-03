@@ -16,30 +16,16 @@ public class DeviceList extends SocketStringCommand {
 	public DeviceList() {
 		super(SocketCommand.COMMAND_MIDI_DEVICE_LIST);
 	}
-/*	
-	public DeviceList(String encoded) {
-		int firstBreak = this.message.indexOf("%");
-		mType = this.message.substring(0, firstBreak);
-		mDevice = this.message.substring(firstBreak);
-		System.out.println(mType + ", " + mDevice);
-	}
-*/
+
 	public DeviceList(int type, String deviceList) {
-		super(SocketCommand.COMMAND_MIDI_DEVICE_LIST, (type==TYPE_IN) ? TYPE_IN_STRING : TYPE_OUT_STRING + "%" + deviceList);
-	}
-
-	public DeviceList(String type, String deviceList) {
-		super(SocketCommand.COMMAND_MIDI_DEVICE_LIST, type + "%" + deviceList);
-
-		mType = type;
-		mDeviceList = deviceList;
+		super(SocketCommand.COMMAND_MIDI_DEVICE_LIST, (type==TYPE_IN) ? TYPE_IN_STRING  + "%" + deviceList : TYPE_OUT_STRING + "%" + deviceList);
 	}
 
 	public void setMessage(String message) {
-		int firstBreak = this.message.indexOf("%");
-		mType = this.message.substring(0, firstBreak);
-		mDeviceList = this.message.substring(firstBreak);
-		System.out.println(mType + ", " + mDeviceList);
+		super.setMessage(message);
+		int firstBreak = message.indexOf("%");
+		mType = message.substring(0, firstBreak);
+		mDeviceList = message.substring(firstBreak+1);
 	}
 
 	public int getType() {
@@ -48,7 +34,7 @@ public class DeviceList extends SocketStringCommand {
 		else if (TYPE_OUT_STRING.equals(mType))
 			return DeviceList.TYPE_IN;
 		else
-			return DeviceList.TYPE_IN;
+			return -1;
 	}
 
 	public String getDeviceList() {

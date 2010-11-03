@@ -1,6 +1,5 @@
 package com.flat20.fingerplay;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.flat20.fingerplay.config.ConfigManager;
@@ -19,8 +19,6 @@ import com.flat20.fingerplay.settings.SettingsModel;
 import com.flat20.fingerplay.settings.SettingsView;
 import com.flat20.gui.InteractiveActivity;
 import com.flat20.gui.NavigationOverlay;
-import com.flat20.gui.animations.AnimationManager;
-import com.flat20.gui.animations.Splash;
 import com.flat20.gui.sprites.Logo;
 import com.flat20.gui.widgets.MidiWidgetContainer;
 
@@ -73,7 +71,8 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 
 
         // Simple splash animation
-
+        Log.i("FPA", "mWidth = " + mWidth + ", mHeight = " + mHeight);
+/*
         Splash navSplash = new Splash(mNavigationOverlay, 64, 30, mWidth, mNavigationOverlay.x);
         mNavigationOverlay.x = mWidth;
         AnimationManager.getInstance().add(navSplash);
@@ -81,6 +80,7 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
         Splash mwcSplash = new Splash(mMidiWidgetsContainer, 64, 40, -mWidth, mMidiWidgetsContainer.x);
         mMidiWidgetsContainer.x = -mWidth;
         AnimationManager.getInstance().add(mwcSplash);
+*/
     }
 
 	@Override

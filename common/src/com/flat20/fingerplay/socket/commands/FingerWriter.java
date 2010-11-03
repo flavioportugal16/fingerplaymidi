@@ -37,7 +37,7 @@ public class FingerWriter {
 				return;
 
 			case SocketCommand.COMMAND_REQUEST_MIDI_DEVICE_LIST:
-				size = encode((SocketCommand) socketCommand);
+				size = encode((SocketStringCommand) socketCommand);
 				mOut.write( mData, 0, size );
 				return;
 
@@ -94,9 +94,10 @@ public class FingerWriter {
 		data[4] = (byte)socketCommand.data2;
 		return size;
 	}
-
+/*
 	private int encode(SocketCommand socketCommand) {
 		mData[0] = socketCommand.command;
 		return 1;
 	}
+*/
 }
