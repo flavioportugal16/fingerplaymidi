@@ -110,7 +110,7 @@ public class MidiControllerManager implements IConfigUpdateListener {
 	}
 
 	// Add all midi controllers inside widgetContainer
-	public void addMidiControllersIn(WidgetContainer widgetContainer) {
+	private void addMidiControllersIn(WidgetContainer widgetContainer) {
 		IWidget[] widgets = widgetContainer.getWidgets();
         for (int i=0; i<widgets.length; i++) {
         	IWidget w = widgets[i];

@@ -33,7 +33,7 @@ public class Materials {
 	// MidiWidgets
 
 	// Contains the red fill colour for Sliders, circle for XYPad and the "tv scanlines".
-	final private static ResourceTexture MC_DEFAULT_TEXTURE = TextureManager.createResourceTexture(R.drawable.controllers_default, 64, 64);
+	final public static ResourceTexture MC_DEFAULT_TEXTURE = TextureManager.createResourceTexture(R.drawable.controllers_default, 128, 128);
 
 	// Shadow outline and dark background 
 	final public static NineSliceMaterial MC_BACKGROUND = new NineSliceMaterial(MC_DEFAULT_TEXTURE, 0,7,24,32, 32,32+7,32+24,32+32);
@@ -45,6 +45,10 @@ public class Materials {
 	// XYPad circle thumb
 	final public static StretchedMaterial MC_XYPAD_INDICATOR = new StretchedMaterial(MC_DEFAULT_TEXTURE, 32, 0, 64, 32);
 	final public static StretchedMaterial MC_XYPAD_INDICATOR_OFF = new StretchedMaterial(MC_DEFAULT_TEXTURE, 32, 32, 64, 64);
+
+	// Fader / Rotary Encoder
+	final public static StretchedMaterial MC_ROTARY = new StretchedMaterial(MC_DEFAULT_TEXTURE, 0, 64, 64, 128);
+	final public static StretchedMaterial MC_ROTARY_OFF = new StretchedMaterial(MC_DEFAULT_TEXTURE, 64, 64, 128, 128);
 
 	// Outline
 	final private static ResourceTexture MC_OUTLINE_TEXTURE = TextureManager.createResourceTexture(R.drawable.controllers_outlines, 64, 256);
