@@ -4,37 +4,12 @@ import com.flat20.gui.Materials;
 import com.flat20.gui.sprites.MaterialSprite;
 
 public class Slider extends DefaultMidiWidget {
-/*
-	final private static ResourceTexture sMeterTex = TextureManager.createResourceTexture(R.drawable.controllers_meter, 4, 4);
-	final private static StretchedMaterial sMeterMat = new StretchedMaterial(sMeterTex);
-	final private static ResourceTexture sMeterOffTex = TextureManager.createResourceTexture(R.drawable.controllers_meter_off, 4, 4);
-	final private static StretchedMaterial sMeterOffMat = new StretchedMaterial(sMeterOffTex);
-*/
+
 	final protected MaterialSprite mMeter;
 	final protected MaterialSprite mMeterOff;
 
-	// IMidiController implementations
-
 	final protected static int CC_TOUCH = 0;
 	final protected static int CC_VALUE = 1;
-/*
-	final private static Parameter[] sParameters = {
-			new Parameter(CC_TOUCH, "Press", Parameter.TYPE_CONTROL_CHANGE, true),
-			new Parameter(CC_VALUE, "Vertical", Parameter.TYPE_CONTROL_CHANGE, true)};
-*/
-/*
-	public Parameter[] getParameters() {
-		return sParameters;
-	}
-
-	public Parameter getParameterById(int parameterId) {
-		for (int i=0; i<sParameters.length; i++) {
-			if (sParameters[i].id == parameterId)
-				return sParameters[i];
-		}
-		return null;
-	}
-*/
 
 	int lastValue = -1;
 
