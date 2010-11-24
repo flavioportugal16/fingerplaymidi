@@ -17,11 +17,8 @@ import com.flat20.fingerplay.socket.commands.midi.MidiControlChange;
 import com.flat20.fingerplay.socket.commands.midi.MidiNoteOff;
 import com.flat20.fingerplay.socket.commands.midi.MidiNoteOn;
 import com.flat20.fingerplay.socket.commands.midi.MidiSocketCommand;
-import com.flat20.gui.widgets.IWidget;
-import com.flat20.gui.widgets.MidiWidget;
 import com.flat20.gui.widgets.SensorSlider;
 import com.flat20.gui.widgets.SensorXYPad;
-import com.flat20.gui.widgets.WidgetContainer;
 
 /**
  * TODO Should parse the same XML data as the LayoutManager and assign controllerNumber
@@ -69,18 +66,15 @@ public class MidiControllerManager implements IConfigUpdateListener {
 	// assigned it already.
     public void addMidiController(IMidiController midiController) {
 		midiController.setOnControlChangeListener( onControlChangeListener );
-/*
-		if (midiController.getControllerNumber() == IMidiController.CONTROLLER_NUMBER_UNASSIGNED)
-			midiController.setControllerNumber( mControllerIndex );
-*/
-    	mMidiControllers.put(midiController, Integer.valueOf(mControllerIndex));
+
+		mMidiControllers.put(midiController, Integer.valueOf(mControllerIndex));
     	if (midiController.getParameters() != null)
     		mControllerIndex += midiController.getParameters().length;
     }
 
     public Set<IMidiController> getMidiControllers() {
     	Set<IMidiController> mcs = (Set<IMidiController>) mMidiControllers.keySet();
-    	return mcs;//(IMidiController[]) mMidiControllers.keySet().toArray();
+    	return mcs;
     }
 
     public IMidiController getMidiControllerByName(String name) {
@@ -108,7 +102,7 @@ public class MidiControllerManager implements IConfigUpdateListener {
 	public int getIndex(IMidiController midiController) {
 		return (int) mMidiControllers.get(midiController);
 	}
-
+/*
 	// Add all midi controllers inside widgetContainer
 	private void addMidiControllersIn(WidgetContainer widgetContainer) {
 		IWidget[] widgets = widgetContainer.getWidgets();
@@ -123,7 +117,7 @@ public class MidiControllerManager implements IConfigUpdateListener {
 			}
         }
 	}
-
+*/
 	private IOnControlChangeListener onControlChangeListener = new IOnControlChangeListener() {
 
 		// Cached to limit garbage collects. 

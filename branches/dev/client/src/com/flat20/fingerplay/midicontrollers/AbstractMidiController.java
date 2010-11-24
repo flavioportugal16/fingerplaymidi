@@ -74,6 +74,7 @@ public abstract class AbstractMidiController implements IMidiController {
 		if (mListener == null)
 			return;
 
+		// TODO if parameterId isn't in the xml..
 		final Parameter p = mParameters[parameterId];
 		final int type = p.type;
 		switch(type) {
