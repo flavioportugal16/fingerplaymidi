@@ -1,6 +1,7 @@
 package com.flat20.gui;
 
 import com.flat20.fingerplay.R;
+import com.flat20.gui.textures.CircleMaterial;
 import com.flat20.gui.textures.NineSliceMaterial;
 import com.flat20.gui.textures.ResourceTexture;
 import com.flat20.gui.textures.StretchedMaterial;
@@ -47,8 +48,9 @@ public class Materials {
 	final public static StretchedMaterial MC_XYPAD_INDICATOR_OFF = new StretchedMaterial(MC_DEFAULT_TEXTURE, 32, 32, 64, 64);
 
 	// Fader / Rotary Encoder
-	final public static StretchedMaterial MC_ROTARY = new StretchedMaterial(MC_DEFAULT_TEXTURE, 0, 64, 64, 128);
-	final public static StretchedMaterial MC_ROTARY_OFF = new StretchedMaterial(MC_DEFAULT_TEXTURE, 64, 64, 128, 128);
+	final public static CircleMaterial MC_ROTARY = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 32, 96, 32);
+	//final public static CircleMaterial MC_ROTARY = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 
+	final public static CircleMaterial MC_ROTARY_OFF = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 96, 96, 32);
 
 	// Outline
 	final private static ResourceTexture MC_OUTLINE_TEXTURE = TextureManager.createResourceTexture(R.drawable.controllers_outlines, 64, 256);
