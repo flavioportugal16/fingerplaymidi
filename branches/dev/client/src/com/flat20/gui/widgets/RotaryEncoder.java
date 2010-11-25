@@ -4,7 +4,7 @@ import com.flat20.gui.Materials;
 import com.flat20.gui.sprites.MaterialSprite;
 import com.flat20.gui.textures.CircleMesh;
 
-// This is actually a Fader
+// This is actually an absolute
 public class RotaryEncoder extends DefaultMidiWidget {
 
 	final protected static int CC_TOUCH = 0;
@@ -12,6 +12,7 @@ public class RotaryEncoder extends DefaultMidiWidget {
 
 	final protected MaterialSprite mCircle;
 	final protected MaterialSprite mCircleOff;
+	final protected MaterialSprite mKnobOverlay;
 
 	private float mAmount = 1.0f;
 	private float mPressedAmount = 1.0f;
@@ -25,13 +26,18 @@ public class RotaryEncoder extends DefaultMidiWidget {
 		addSprite(mBackground);
 
 		mCircle = new MaterialSprite( Materials.MC_ROTARY );
+		mCircle.rotation = 180;
 		addSprite(mCircle);
-		
+
 		mCircleOff = new MaterialSprite( Materials.MC_ROTARY_OFF );
+		mCircle.rotation = 180;
 		addSprite(mCircleOff);
+		
+		mKnobOverlay = new MaterialSprite( Materials.MC_ROTARY_OVERLAY );
+		addSprite(mKnobOverlay);
 
 		addSprite(mOutline);
-		addSprite(mOutlineSelected);
+		//addSprite(mOutlineSelected);
 		addSprite(mTvScanlines);
 
 	}
@@ -41,17 +47,20 @@ public class RotaryEncoder extends DefaultMidiWidget {
 		mAmount = amount;
 		mAmount = (mAmount > 1.0f) ? 1.0f : (mAmount < 0.0f) ? 0.0f : mAmount;
 
+		// Only bother to redraw if amount*0x7f has changed
 		int value = (int) Math.max(0, Math.min(mAmount * 0x7F, 0x7F));
 		if (value != lastValue) {
 			//getMidiController().sendParameter(CC_VALUE, value);
 
-			// Only bother to redraw if amount*0x7f has changed
+			// First and last segments are hidden under the black knob overlay.
 			final CircleMesh mesh = (CircleMesh)mCircle.getGrid();
-			int visible = Math.round(mAmount * mesh.getNumSegments());
+			int visible = Math.round(mAmount * (mesh.getNumSegments()-3)) + 1;
 			mesh.setVisibleSegments( visible );
 
 			final CircleMesh mesh2 = (CircleMesh)mCircleOff.getGrid();
 			mesh2.setVisibleSegments( visible );
+
+			System.out.println( value + " visible: " + visible );
 
 			lastValue = value;
 		}
@@ -109,11 +118,12 @@ public class RotaryEncoder extends DefaultMidiWidget {
 		mCircle.setSize(w, h);
 		mCircle.x += w/2 + 1;
 		mCircle.y += h/2;
-		
+
 		mCircleOff.setSize(w, h);
 		mCircleOff.x = mCircle.x;
 		mCircleOff.y = mCircle.y;
 
+		mKnobOverlay.setSize(w, h);
 
 		super.setSize(w, h);
 

@@ -51,6 +51,7 @@ public class Materials {
 	final public static CircleMaterial MC_ROTARY = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 32, 96, 32);
 	//final public static CircleMaterial MC_ROTARY = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 
 	final public static CircleMaterial MC_ROTARY_OFF = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 96, 96, 32);
+	final public static StretchedMaterial MC_ROTARY_OVERLAY = new StretchedMaterial(MC_DEFAULT_TEXTURE, 64, 0, 128, 64);
 
 	// Outline
 	final private static ResourceTexture MC_OUTLINE_TEXTURE = TextureManager.createResourceTexture(R.drawable.controllers_outlines, 64, 256);
