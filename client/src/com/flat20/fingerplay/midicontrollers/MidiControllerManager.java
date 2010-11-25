@@ -102,22 +102,7 @@ public class MidiControllerManager implements IConfigUpdateListener {
 	public int getIndex(IMidiController midiController) {
 		return (int) mMidiControllers.get(midiController);
 	}
-/*
-	// Add all midi controllers inside widgetContainer
-	private void addMidiControllersIn(WidgetContainer widgetContainer) {
-		IWidget[] widgets = widgetContainer.getWidgets();
-        for (int i=0; i<widgets.length; i++) {
-        	IWidget w = widgets[i];
-        	if (w instanceof MidiWidget) {
-				MidiWidget midiWidget = (MidiWidget) w;
-	        	addMidiController( midiWidget.getMidiController() );
-        	} else if (w instanceof WidgetContainer) {
-				WidgetContainer wc = (WidgetContainer) w;
-				addMidiControllersIn(wc);
-			}
-        }
-	}
-*/
+
 	private IOnControlChangeListener onControlChangeListener = new IOnControlChangeListener() {
 
 		// Cached to limit garbage collects. 

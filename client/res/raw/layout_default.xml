@@ -122,6 +122,7 @@
 				<parameter id="2" type="controlChange" />
 			</xypad>
 			-->
+			<rotaryencoder x="255" y="76" width="64" height="64" controllerNumber="4" />
 			<rotaryencoder x="455" y="76" width="128" height="128" controllerNumber="4" />
 		</screen>
 
