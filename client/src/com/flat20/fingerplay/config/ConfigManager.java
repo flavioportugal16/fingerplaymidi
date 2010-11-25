@@ -57,8 +57,11 @@ public class ConfigManager {
 	}
 
 	private ConfigReader getReader() {
-        // TODO Move config parsing somewhere better
-        File xmlFile = new File(Environment.getExternalStorageDirectory() + "/FingerPlayMIDI/" + mSettingsModel.layoutFile);
+
+		System.out.println("ConfigManager data: " + Environment.getDataDirectory());
+		System.out.println("ConfigManager external: " + Environment.getExternalStorageDirectory());
+
+		File xmlFile = new File(Environment.getExternalStorageDirectory() + "/FingerPlayMIDI/" + mSettingsModel.layoutFile);
 
         ConfigReader reader = null;
         try {
@@ -88,38 +91,51 @@ public class ConfigManager {
 			throw new Exception("No config file to parse!");
 
 		try {
-			ConfigLayout layout = reader.selectLayout(mWidth, mHeight);
-			reader.parseLayout(layout); // Fills layout with info from the config file.
 
-			// Instantiate controller classes.
-			// MidiWidgetContainer instantiates the View class but the controllers
-			// are created here. Maybe this class should do both..?
+			// Fills ConfigLayout with all info and controllers from
+			// the config file.
+
+			ConfigLayout layout = reader.selectLayout(mWidth, mHeight);
+			reader.parseLayout(layout); 
+
+
+			// Instantiate controller and view classes.
 
 	        for (ConfigScreen screen : layout.screens) {
 	        	for (ConfigItem configItem : screen.items) {
+	        		
+	        		// Load the controller class.
+
 					Class<?> ControllerClass = Class.forName( configItem.controllerClassName );
 					Class<?>[] classParams = new Class<?>[] {};
 					Object[] objectParams = new Object[] {};
 					Constructor<?> ctor = ControllerClass.getConstructor( classParams );
 					IConfigurable controller = (IConfigurable) ctor.newInstance( objectParams );
-					configItem.itemController = controller;
 
+					configItem.itemController = controller;
 					configItem.itemController.setParameters(configItem.parameters);
 
 
+					// Load the view class if this controller has one.
+
 					if (configItem.viewClassName != null) {
+
 						Class<?> ViewClass = Class.forName( configItem.viewClassName );
 						Class<?>[] viewClassParams = new Class<?>[] {};
 						Object[] viewObjectParams = new Object[] {};
 						Constructor<?> viewCtor = ViewClass.getConstructor( viewClassParams );
-
 						IConfigItemView view = (IConfigItemView) viewCtor.newInstance( viewObjectParams );
-						view.setController( configItem.itemController );
+
 						configItem.itemView = view;
+						configItem.itemView.setController( configItem.itemController );
+
 					}
 
 	        	}
 	        }
+
+
+	        // Notify listeners that the config has been parsed and updated.
 
 	        for (IConfigUpdateListener listener : mListeners) {
 	        	listener.onConfigUpdated(layout);
