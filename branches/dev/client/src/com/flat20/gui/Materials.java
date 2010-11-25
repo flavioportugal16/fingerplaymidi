@@ -50,7 +50,7 @@ public class Materials {
 	// Fader / Rotary Encoder
 	final public static CircleMaterial MC_ROTARY = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 32, 96, 32);
 	//final public static CircleMaterial MC_ROTARY = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 
-	final public static CircleMaterial MC_ROTARY_OFF = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 96, 96, 32);
+	final public static CircleMaterial MC_ROTARY_OFF = new CircleMaterial(MC_DEFAULT_TEXTURE, 32, 48, 48, 16);
 	final public static StretchedMaterial MC_ROTARY_OVERLAY = new StretchedMaterial(MC_DEFAULT_TEXTURE, 64, 0, 128, 64);
 
 	// Outline

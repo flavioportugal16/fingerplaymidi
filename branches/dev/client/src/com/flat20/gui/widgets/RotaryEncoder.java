@@ -4,7 +4,7 @@ import com.flat20.gui.Materials;
 import com.flat20.gui.sprites.MaterialSprite;
 import com.flat20.gui.textures.CircleMesh;
 
-// This is actually an absolute
+// This is an absolute rotary encoder.
 public class RotaryEncoder extends DefaultMidiWidget {
 
 	final protected static int CC_TOUCH = 0;
@@ -30,9 +30,9 @@ public class RotaryEncoder extends DefaultMidiWidget {
 		addSprite(mCircle);
 
 		mCircleOff = new MaterialSprite( Materials.MC_ROTARY_OFF );
-		mCircle.rotation = 180;
+		mCircleOff.rotation = 180;
 		addSprite(mCircleOff);
-		
+
 		mKnobOverlay = new MaterialSprite( Materials.MC_ROTARY_OVERLAY );
 		addSprite(mKnobOverlay);
 
@@ -50,7 +50,7 @@ public class RotaryEncoder extends DefaultMidiWidget {
 		// Only bother to redraw if amount*0x7f has changed
 		int value = (int) Math.max(0, Math.min(mAmount * 0x7F, 0x7F));
 		if (value != lastValue) {
-			//getMidiController().sendParameter(CC_VALUE, value);
+			getMidiController().sendParameter(CC_VALUE, value);
 
 			// First and last segments are hidden under the black knob overlay.
 			final CircleMesh mesh = (CircleMesh)mCircle.getGrid();
@@ -59,8 +59,6 @@ public class RotaryEncoder extends DefaultMidiWidget {
 
 			final CircleMesh mesh2 = (CircleMesh)mCircleOff.getGrid();
 			mesh2.setVisibleSegments( visible );
-
-			System.out.println( value + " visible: " + visible );
 
 			lastValue = value;
 		}
@@ -79,7 +77,8 @@ public class RotaryEncoder extends DefaultMidiWidget {
 	@Override
 	public boolean onTouchMove(int touchX, int touchY, float pressure, int pointerId) {
 
-		float delta = (touchY - mPressedY) / 100.0f;
+		float acc = (height/32*64); // How far do we need to drag
+		float delta = (touchY - mPressedY) / acc; 
 		setAmount( mPressedAmount + delta );
 		return true;
 	}

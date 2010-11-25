@@ -2,13 +2,14 @@ package com.flat20.fingerplay.midicontrollers;
 
 import java.util.HashMap;
 
+import android.util.Log;
+
 import com.flat20.fingerplay.config.IConfigItemView;
 import com.flat20.fingerplay.config.dto.ConfigItemParameters;
 import com.flat20.gui.widgets.MidiWidget;
 
 public abstract class AbstractMidiController implements IMidiController {
 
-	//private int mControllerNumber = CONTROLLER_NUMBER_UNASSIGNED;
 	private String mName = null;
 	private Parameter[] mParameters = null;
 
@@ -18,17 +19,6 @@ public abstract class AbstractMidiController implements IMidiController {
 	private MidiWidget mView = null;
 	
 	
-/*
-	@Override
-	public int getControllerNumber() {
-		return mControllerNumber;
-	}
-	
-	@Override
-	public void setControllerNumber(int number) {
-		mControllerNumber = number;
-	}
-*/
 
 	@Override
 	public String getName() {
@@ -44,24 +34,7 @@ public abstract class AbstractMidiController implements IMidiController {
 	public Parameter[] getParameters() {
 		return mParameters;
 	}
-/*
-	@Override
-	public void setParameters(Parameter[] parameters) {
-		mParameters = parameters;
-	}*/
-/*
-	@Override
-	public Parameter getParameterById(int parameterId) {
-		return mParameters[parameterId];
-		return null;
-	}
 
-	@Override
-	public boolean isHolding() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-*/
 	/**
 	 * Sends the parameter using the value (0x00-0x7FF)
 	 * 
@@ -74,20 +47,26 @@ public abstract class AbstractMidiController implements IMidiController {
 		if (mListener == null)
 			return;
 
-		// TODO if parameterId isn't in the xml..
-		final Parameter p = mParameters[parameterId];
-		final int type = p.type;
-		switch(type) {
-			case Parameter.TYPE_CONTROL_CHANGE:
-				mListener.onControlChange(this, p.channel, p.controllerNumber, value);
-				break;
-			case Parameter.TYPE_NOTE_ON:
-				mListener.onNoteOn(this, p.channel, p.controllerNumber, value);
-				break;
-			case Parameter.TYPE_NOTE_OFF:
-				mListener.onNoteOff(this, p.channel, p.controllerNumber, value);
-				break;
+		try {
+			final Parameter p = mParameters[parameterId];
+
+			final int type = p.type;
+			switch(type) {
+				case Parameter.TYPE_CONTROL_CHANGE:
+					mListener.onControlChange(this, p.channel, p.controllerNumber, value);
+					break;
+				case Parameter.TYPE_NOTE_ON:
+					mListener.onNoteOn(this, p.channel, p.controllerNumber, value);
+					break;
+				case Parameter.TYPE_NOTE_OFF:
+					mListener.onNoteOff(this, p.channel, p.controllerNumber, value);
+					break;
+			}
+
+		} catch (ArrayIndexOutOfBoundsException e) {
+			Log.w("AbstractMidiController", "Controller tried to send a parameter which wasn't defined in the XML. " + e);
 		}
+
 	}
 
 	@Override
