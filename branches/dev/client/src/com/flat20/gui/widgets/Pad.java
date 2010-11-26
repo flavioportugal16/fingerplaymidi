@@ -85,7 +85,10 @@ public class Pad extends MidiWidget {
 	@Override
 	protected void press(float pressure) {
 
-		getMidiController().sendParameter(CC_TOUCH, 0x7F);
+		if (getMidiController().getParameters()[CC_TOUCH].usePressure)
+			getMidiController().sendParameter(CC_TOUCH, Math.min(0x7F, Math.round(0x7F * (pressure*4))));
+		else
+			getMidiController().sendParameter(CC_TOUCH, 0x7F);
 		/*
 		if (sParameters[CC_TOUCH].type == Parameter.TYPE_CONTROL_CHANGE)
 			sendControlChange(CC_TOUCH, 0x7F);

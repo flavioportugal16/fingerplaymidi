@@ -1,20 +1,11 @@
 package com.flat20.gui.widgets;
 
-import com.flat20.gui.Materials;
-import com.flat20.gui.sprites.MaterialSprite;
-import com.flat20.gui.textures.CircleMesh;
-
-// This is an absolute rotary encoder.
-public class RotaryEncoder extends DefaultMidiWidget {
+public abstract class RotaryEncoder extends DefaultMidiWidget {
 
 	final protected static int CC_TOUCH = 0;
 	final protected static int CC_VALUE = 1;
 
-	final protected MaterialSprite mCircle;
-	final protected MaterialSprite mCircleOff;
-	final protected MaterialSprite mKnobOverlay;
-
-	private float mAmount = 1.0f;
+	protected float mAmount = 1.0f;
 	private float mPressedAmount = 1.0f;
 
 	private int mPressedY;
@@ -23,23 +14,10 @@ public class RotaryEncoder extends DefaultMidiWidget {
 
 	public RotaryEncoder() {
 
-		addSprite(mBackground);
-
-		mCircle = new MaterialSprite( Materials.MC_ROTARY );
-		mCircle.rotation = 180;
-		addSprite(mCircle);
-
-		mCircleOff = new MaterialSprite( Materials.MC_ROTARY_OFF );
-		mCircleOff.rotation = 180;
-		addSprite(mCircleOff);
-
-		mKnobOverlay = new MaterialSprite( Materials.MC_ROTARY_OVERLAY );
-		addSprite(mKnobOverlay);
-
-		addSprite(mOutline);
-		//addSprite(mOutlineSelected);
-		addSprite(mTvScanlines);
-
+	}
+	
+	protected void redraw() {
+		
 	}
 
 	private void setAmount(float amount) {
@@ -52,13 +30,7 @@ public class RotaryEncoder extends DefaultMidiWidget {
 		if (value != lastValue) {
 			getMidiController().sendParameter(CC_VALUE, value);
 
-			// First and last segments are hidden under the black knob overlay.
-			final CircleMesh mesh = (CircleMesh)mCircle.getGrid();
-			int visible = Math.round(mAmount * (mesh.getNumSegments()-3)) + 1;
-			mesh.setVisibleSegments( visible );
-
-			final CircleMesh mesh2 = (CircleMesh)mCircleOff.getGrid();
-			mesh2.setVisibleSegments( visible );
+			redraw();
 
 			lastValue = value;
 		}
@@ -97,35 +69,12 @@ public class RotaryEncoder extends DefaultMidiWidget {
 
 	@Override
 	protected void press(float pressure) {
-
-		//getMidiController().sendParameter(CC_TOUCH, 0x7F);
-		mCircle.visible = true;
-		mCircleOff.visible = false;
+		getMidiController().sendParameter(CC_TOUCH, 0x7F);
 	}
 
 	@Override
 	protected void release(float pressure) {
-
-		//getMidiController().sendParameter(CC_TOUCH, 0x00);
-		mCircle.visible = false;
-		mCircleOff.visible = true;
-	}
-
-	@Override
-	public void setSize(int w, int h) {
-
-		mCircle.setSize(w, h);
-		mCircle.x += w/2 + 1;
-		mCircle.y += h/2;
-
-		mCircleOff.setSize(w, h);
-		mCircleOff.x = mCircle.x;
-		mCircleOff.y = mCircle.y;
-
-		mKnobOverlay.setSize(w, h);
-
-		super.setSize(w, h);
-
+		getMidiController().sendParameter(CC_TOUCH, 0x00);
 	}
 
 }

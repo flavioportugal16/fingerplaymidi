@@ -91,7 +91,7 @@ public abstract class AbstractMidiController implements IMidiController {
 	// IConfigurable
 
 	@Override
-	public void setParameters( ConfigItemParameters parameters) {
+	public void setParameters(ConfigItemParameters parameters) {
 
 		mParameters = new Parameter[parameters.data.size()];
 
@@ -102,6 +102,7 @@ public abstract class AbstractMidiController implements IMidiController {
 			int controllerNumber = Integer.parseInt( (String)map.get("controllerNumber") );
 			String name = (String)map.get("name");
 			boolean visible = Boolean.parseBoolean( (String)map.get("visible") );
+			boolean usePressure = Boolean.parseBoolean( (String)map.get("usePressure") );
 			String stringType = (String)map.get("type");
 			int type = Parameter.TYPE_CONTROL_CHANGE;
 
@@ -115,7 +116,7 @@ public abstract class AbstractMidiController implements IMidiController {
 				type = Parameter.TYPE_NOTE_OFF;
 			}
 
-			Parameter param = new Parameter(id, channel, controllerNumber, name, type, visible);
+			Parameter param = new Parameter(id, channel, controllerNumber, name, type, visible, usePressure);
 			mParameters[id] = param;
 		}
 
