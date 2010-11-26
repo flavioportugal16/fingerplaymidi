@@ -6,6 +6,8 @@
 
 			Specifies the default value for all controllers in the layout file. All values
 			can be, and should be, overriden.
+			
+			A controller's parameters don't have to be specified in the defaults section. 
 
 			<id> An identifier for the controller parameter. 0 = Press for example.
 			<channel> Midi channel.
@@ -25,14 +27,18 @@
 			<parameter id="1" channel="0" controllerNumber="0" name="Vertical" type="controlChange" visible="true" />
 		</slider>
 		<pad controller="com.flat20.fingerplay.midicontrollers.MidiController" view="com.flat20.gui.widgets.Pad">
-			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="note" visible="false" />
+			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="note" visible="false" usePressure="true" />
 		</pad>
-		<rotaryencoder controller="com.flat20.fingerplay.midicontrollers.MidiController" view="com.flat20.gui.widgets.RotaryEncoder">
+		<rotaryencoderabsolute controller="com.flat20.fingerplay.midicontrollers.MidiController" view="com.flat20.gui.widgets.RotaryEncoderAbsolute">
+			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="controlChange" visible="true" usePressure="true" />
+			<parameter id="1" channel="0" controllerNumber="0" name="Vertical" type="controlChange" visible="true" />
+		</rotaryencoderabsolute>
+		<rotaryencoderrelative controller="com.flat20.fingerplay.midicontrollers.MidiController" view="com.flat20.gui.widgets.RotaryEncoderRelative">
 			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="controlChange" visible="true" />
 			<parameter id="1" channel="0" controllerNumber="0" name="Vertical" type="controlChange" visible="true" />
-		</rotaryencoder>
+		</rotaryencoderrelative>
 
-		<!-- Sensor controllers are under construction -->
+		<!-- Sensor controllers are "under construction" -->
 		<orientation view="com.flat20.gui.widgets.SensorXYPad">
 			<parameter id="0" channel="0" controllerNumber="0" name="Press" type="controlChange" visible="true" />
 			<parameter id="1" channel="0" controllerNumber="0" name="Horizontal" type="controlChange" visible="true" />
@@ -66,8 +72,10 @@
 			<!--
 				An xypad using the default MIDI channel and controllerNumber 4,5 and 6.
 				FingerPlay automatically adds the parameter ID to the base controllerNumber 
-				IF controllerNumber is defined on the XML element and the parameters 
-				are omitted. 
+				IF controllerNumber is defined on the base XML tag, in this case "xypad",
+				and the individual parameters are _omitted_.
+
+				So this xypad's parameters would have the controllerNumbers 4,5 and 6. 
 			 -->
 			<xypad x="216" y="68" width="184" height="184" controllerNumber="4" />
 
@@ -122,8 +130,13 @@
 				<parameter id="2" type="controlChange" />
 			</xypad>
 			-->
-			<rotaryencoder x="255" y="76" width="64" height="64" controllerNumber="4" />
-			<rotaryencoder x="455" y="76" width="128" height="128" controllerNumber="4" />
+
+			<rotaryencoderabsolute x="255" y="76" width="64" height="64">
+				<parameter id="0" controllerNumber="0" />
+				<parameter id="1" controllerNumber="1" />
+			</rotaryencoderabsolute>
+
+			<rotaryencoderabsolute x="455" y="76" width="128" height="128" />
 		</screen>
 
 		<screen x="0" y="482" width="854" height="478">

@@ -194,7 +194,7 @@ public class ConfigReader {
 					Element widgetElement = (Element) widgets.item(e);
 					ConfigItem configItem = parseWidget(widgetElement);
 					configScreen.items.add(configItem);
-					//System.out.println(configItem);
+					System.out.println(configItem);
 				}
 			}
 
@@ -240,8 +240,9 @@ public class ConfigReader {
 
 
 	/**
-	 * Adds and overwrites any parameters found on widgetElement on the supplied
-	 * item's parameters.
+	 * Loads all parameters defined inside the itemElement.
+	 * It will override the parameters found in the defaults section.
+	 *  
 	 * 
 	 * @param item
 	 * @param itemElement
@@ -257,8 +258,9 @@ public class ConfigReader {
 
 			int id = Integer.parseInt((String)attributes.getNamedItem("id").getNodeValue());
 
-			// Load old parameter value if it's been set.
+			// Load old parameter value if it's been set in the defaults section.
 			HashMap<String, Object> parameters = item.parameters.getParameterById(id);
+
 			if (parameters == null) {
 				parameters = new HashMap<String, Object>();
 				item.parameters.data.add(parameters);

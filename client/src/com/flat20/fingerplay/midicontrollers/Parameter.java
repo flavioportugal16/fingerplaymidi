@@ -13,22 +13,25 @@ public class Parameter {
 	public int type;
 	final public boolean visible;
 	public int channel;
-	public int controllerNumber; // or key
+	public int controllerNumber; // or key for NOTEs
+	
+	public boolean usePressure;
 
-	public Parameter(int id, int channel, int controllerNumber, String name, int type, boolean visible) {
+	public Parameter(int id, int channel, int controllerNumber, String name, int type, boolean visible, boolean usePressure) {
 		this.id = id;
 		this.channel = channel;
 		this.controllerNumber = controllerNumber;
 		this.name = name;
 		this.type = type;
 		this.visible = visible;
+		this.usePressure = usePressure;
 	}
 
 	public Parameter clone() {
-		return new Parameter(id, channel, controllerNumber, name, type, visible);
+		return new Parameter(id, channel, controllerNumber, name, type, visible, usePressure);
 	}
 
 	public String toString() {
-		return "Parameter id: " + id + ", channel: " + channel + ", controllerNumber: " + controllerNumber + ", name: " + name + ", type: " + type + ", visible: " + visible;
+		return "Parameter id: " + id + ", channel: " + channel + ", controllerNumber: " + controllerNumber + ", name: " + name + ", type: " + type + ", visible: " + visible + ", usePressure: " + usePressure;
 	}
 }
