@@ -100,14 +100,19 @@ public class FingerServerConnection extends Connection implements IReceiver {
 		if (isConnected())
 			disconnect();
 
-        String[] split = serverAddress.split(":");
-        if (split != null && split.length == 2) {
-        	server = split[0];
-        	port = Integer.valueOf(split[1]);
-        } else {
-        	server = serverAddress;
-        	port = DEFAULT_PORT;
-        } 
+		try {
+			serverAddress = serverAddress.trim();
+	        String[] split = serverAddress.split(":");
+	        if (split != null && split.length == 2) {
+	        	server = split[0];
+	        	port = Integer.valueOf(split[1]);
+	        } else {
+	        	server = serverAddress;
+	        	port = DEFAULT_PORT;
+	        }
+		} catch (NumberFormatException e) {
+			throw new ConnectException(e.toString());
+		}
 
         try {
 			socket = new Socket();

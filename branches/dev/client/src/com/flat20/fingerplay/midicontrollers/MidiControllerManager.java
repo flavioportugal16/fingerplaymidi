@@ -149,11 +149,13 @@ public class MidiControllerManager implements IConfigUpdateListener {
 
     	public void onSocketCommand(SocketCommand sm) {
 			if (sm.command == SocketCommand.COMMAND_MIDI_SHORT_MESSAGE) {
-				Log.i("mcm", "server sent cc message");
+				//Log.i("MidiControllerManager", "server sent cc message");
 				MidiSocketCommand msc = (MidiSocketCommand) sm;
 				int ccIndex = msc.data1;
-				Log.i("mcm", " msc = " + msc + ", ccIndex: " + ccIndex);
-				Log.i("mcm", "channel: " + msc.channel + ", " + msc.command + ", " + msc.data1 + ", " + msc.data2);
+				Log.i("MidiControllerManager.onSocketCommand", "ccIndex: " + ccIndex);
+				Log.i("MidiControllerManager.onSocketCommand", "channel: " + msc.channel + ", " + msc.command + ", " + msc.data1 + ", " + msc.data2);
+				
+				// TODO Send this command to the midi controllers
 			}
     	}
     };

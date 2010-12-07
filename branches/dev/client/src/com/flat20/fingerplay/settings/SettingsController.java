@@ -77,16 +77,16 @@ public class SettingsController {
     	public void onSocketCommand(SocketCommand sm) {
     		if (sm.command == SocketCommand.COMMAND_MIDI_DEVICE_LIST) {
     			final DeviceList ssm = (DeviceList) sm;
-    			Log.i("SettingsController", "" + sm);
+    			Log.i("SettingsController", "onSocketCommand device_list type = " + ssm.getType() + ", " + ssm.getDeviceList());
     			String[] deviceNames = ssm.getDeviceList().split("%");
     			if (ssm.getType() == DeviceList.TYPE_OUT) {
     				mModel.setMidiDevicesOut(deviceNames);
-    				if (mModel.midiDeviceOut != null)
-    					setMidiDevice(DeviceList.TYPE_OUT, mModel.midiDeviceOut);
+    				//if (mModel.midiDeviceOut != null)
+    					//setMidiDevice(DeviceList.TYPE_OUT, mModel.midiDeviceOut);
     			} else {
     				mModel.setMidiDevicesIn(deviceNames);
-    				if (mModel.midiDeviceIn != null)
-    					setMidiDevice(DeviceList.TYPE_IN, mModel.midiDeviceIn);
+    				//if (mModel.midiDeviceIn != null)
+    					//setMidiDevice(DeviceList.TYPE_IN, mModel.midiDeviceIn);
     			}
     		} else if (sm.command == SocketCommand.COMMAND_VERSION) {
     			Version version = (Version) sm;
@@ -107,7 +107,7 @@ public class SettingsController {
     protected void requestMidiDeviceList(int type) {
     	if (mConnectionManager.isConnected()) {
     		RequestMidiDeviceList sm = new RequestMidiDeviceList(type);
-    		System.out.println("requestMidiDeviceList" + type);
+    		System.out.println("requestMidiDeviceList: type = " + type);
     		mConnectionManager.send(sm);
     	}
     }

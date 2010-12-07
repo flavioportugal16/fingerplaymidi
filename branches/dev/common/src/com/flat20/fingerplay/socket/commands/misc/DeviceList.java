@@ -7,8 +7,8 @@ public class DeviceList extends SocketStringCommand {
 
 	public final static int TYPE_IN = 1; // In from DAW and OUT to FP client
 	public final static int TYPE_OUT = 2; // Out from FP client.
-	public final static String TYPE_IN_STRING = "in";
-	public final static String TYPE_OUT_STRING = "out";
+	public final static String TYPE_IN_STRING = "1";
+	public final static String TYPE_OUT_STRING = "2";
 
 	private String mType = "";
 	private String mDeviceList = "";
@@ -19,6 +19,7 @@ public class DeviceList extends SocketStringCommand {
 
 	public DeviceList(int type, String deviceList) {
 		super(SocketCommand.COMMAND_MIDI_DEVICE_LIST, (type==TYPE_IN) ? TYPE_IN_STRING  + "%" + deviceList : TYPE_OUT_STRING + "%" + deviceList);
+		System.out.println("DeviceList ctor " + type + ", " + deviceList);
 	}
 
 	public void setMessage(String message) {
@@ -26,6 +27,8 @@ public class DeviceList extends SocketStringCommand {
 		int firstBreak = message.indexOf("%");
 		mType = message.substring(0, firstBreak);
 		mDeviceList = message.substring(firstBreak+1);
+
+		System.out.println("DeviceList.setMessage " + message);
 	}
 
 	public int getType() {
