@@ -31,8 +31,8 @@ import com.flat20.fingerplay.view.IView;
 public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 
 	final private Socket client;
-	final private Midi mMidiOut; // In from FP client and OUT to DAW.
-	final private Midi mMidiIn; // In from DAW and OUT to FP client.
+	final private Midi mMidiToFP; // In from FP client and OUT to DAW.
+	final private Midi mMidiToDAW;
 
 	final private IView mView;
 
@@ -46,8 +46,8 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 		this.client = client;
 		mView = view;
 		
-		mMidiOut = new Midi();
-		mMidiIn = new Midi();
+		mMidiToFP = new Midi();
+		mMidiToDAW = new Midi();
 
 		in = new DataInputStream(client.getInputStream());
 		out = new DataOutputStream(client.getOutputStream());
@@ -101,9 +101,9 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 	}
 
 	public void onMidiSocketCommand(MidiSocketCommand socketCommand) throws Exception {
-		mView.print("midiCommand = " + socketCommand.midiCommand + " channel = " + socketCommand.channel + ", data1 = " + socketCommand.data1 + " data2 = " + socketCommand.data2);
-		synchronized (mMidiOut) {
-			mMidiOut.sendShortMessage(socketCommand.midiCommand, socketCommand.channel, socketCommand.data1, socketCommand.data2);						
+		mView.print("midiCommand = " + socketCommand.midiCommand + " channel = " + socketCommand.channel + ", data1 = " + socketCommand.data1 + " data2 = " + socketCommand.data2 + ", mMidiOut = " + mMidiToFP);
+		synchronized (mMidiToDAW) {
+			mMidiToDAW.sendShortMessage(socketCommand.midiCommand, socketCommand.channel, socketCommand.data1, socketCommand.data2);						
 		}
 	}
 
@@ -122,21 +122,25 @@ public class ClientSocketThread implements Runnable, IReceiver, IMidiListener {
 		if (deviceNames.length > 0)
 			allDevices = allDevices.substring(0, allDevices.length()-1);
 
-		DeviceList deviceList = new DeviceList( request.getType(), allDevices );
+		System.out.println("ClientSocketThread.onRequestMidiDeviceList type = " + request.getType());
+		//System.out.println("deviceList = " + deviceList);
 
+		DeviceList deviceList = new DeviceList( request.getType(), allDevices );
+		
 		mWriter.write(deviceList);
 	}
 
 	public void onSetMidiDevice(SetMidiDevice ssm) throws Exception {
 
+		System.out.println("ClientSocketThread.onSetMidiDevice ssm = " + ssm);
 		int type = ssm.getType();
 		String device = ssm.getDevice();
 
-		Midi midi = (type==DeviceList.TYPE_OUT) ? mMidiOut : mMidiIn;
+		Midi midi = (type==DeviceList.TYPE_OUT) ? mMidiToFP : mMidiToDAW;
 
 		synchronized (midi) {
 			midi.close();
-			MidiDevice midiDevice = midi.open(device, (type==DeviceList.TYPE_OUT) ? true : false);
+			MidiDevice midiDevice = midi.open(device, (type==DeviceList.TYPE_OUT) ? false : true);
 
 			mView.print("onSetMidiDevice. type: " + type + " name: " + device + " returned midiDevice = " + midiDevice);
 

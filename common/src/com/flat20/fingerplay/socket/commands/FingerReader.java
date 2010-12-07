@@ -32,27 +32,38 @@ public class FingerReader {
 
 	public byte readCommand() throws Exception {
 
+		final SocketCommand sm;
 		byte command = mIn.readByte();
 
 		switch (command) {
 			case SocketCommand.COMMAND_MIDI_SHORT_MESSAGE:
-				mReceiver.onMidiSocketCommand( decode(sMss, command) );
+				decode(sMss, command);
+				mReceiver.onMidiSocketCommand( sMss );
 				return command;
 			
 			case SocketCommand.COMMAND_REQUEST_MIDI_DEVICE_LIST:
-				mReceiver.onRequestMidiDeviceList( (RequestMidiDeviceList) decode(new RequestMidiDeviceList(), command) );
+				sm = new RequestMidiDeviceList();
+				decode((RequestMidiDeviceList)sm, command);
+				mReceiver.onRequestMidiDeviceList( (RequestMidiDeviceList) sm );
 				return command;
-			
+
 			case SocketCommand.COMMAND_MIDI_DEVICE_LIST:
-				mReceiver.onDeviceList( (DeviceList) decode(new DeviceList(), command) );
+				sm = new DeviceList();
+				decode((DeviceList)sm, command);
+				mReceiver.onDeviceList( (DeviceList) sm );
 				return command;
 
 			case SocketCommand.COMMAND_SET_MIDI_DEVICE:
-				mReceiver.onSetMidiDevice( (SetMidiDevice) decode(new SetMidiDevice(), command) );
+				SetMidiDevice temp = new SetMidiDevice();
+				System.out.println("FingerReader 1 temp = " + temp);
+				decode(temp, command);
+				System.out.println("FingerReader 2 temp = " + temp);
+				mReceiver.onSetMidiDevice( temp );
 				return command;
 
 			case SocketCommand.COMMAND_VERSION:
-				mReceiver.onVersion( (Version) decode(sV, command) );
+				decode(sV, command);
+				mReceiver.onVersion( sV );
 				return command;
 			default:
 				System.out.println("Unknown command: " + command + String.valueOf(command));
@@ -65,12 +76,13 @@ public class FingerReader {
 		return socketCommand;
 	}
 */
-	private void decode(SocketStringCommand socketCommand, byte command, int length, byte[] message) {
+	private SocketStringCommand decode(SocketStringCommand socketCommand, byte command, int length, byte[] message) {
 		socketCommand.command = command;
 		socketCommand.setMessage( new String(message, 0, length) );
+		return socketCommand;
 	}
 
-	private SocketStringCommand decode(SocketStringCommand socketCommand, byte command) throws Exception {
+	private void decode(SocketStringCommand socketCommand, byte command) throws Exception {
 		try {
 			final DataInputStream in = mIn;
 			// Read until we have an int.
@@ -88,24 +100,24 @@ public class FingerReader {
 
 			decode(socketCommand, command, textLength, sData);
 
-			return socketCommand;
+			//return socketCommand;
 
 		} catch (IOException e) {
 			throw new Exception("Couldn't parse SocketStringCommand " + socketCommand.command);
 		}
 	}
 
-	private Version decode(Version version, byte command) throws Exception {
+	private void decode(Version version, byte command) throws Exception {
 		decode((SocketStringCommand) version, command);
-		return version;
+		//return version;
 	}
 
-	private MidiSocketCommand decode(MidiSocketCommand socketCommand, byte command) throws Exception {
+	private void decode(MidiSocketCommand socketCommand, byte command) throws Exception {
 		try {
 			final DataInputStream in = mIn;
 			socketCommand.command = command;
 			socketCommand.set(in.readByte(), in.readByte(), in.readByte(), in.readByte());
-			return socketCommand;
+			//return socketCommand;
 		} catch (IOException e) {
 			throw new Exception("Couldn't parse MidiSocketCommand " + socketCommand.command);
 		}

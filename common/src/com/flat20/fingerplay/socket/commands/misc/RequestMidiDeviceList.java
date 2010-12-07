@@ -10,7 +10,8 @@ public class RequestMidiDeviceList extends SocketStringCommand {
 	}
 
 	public RequestMidiDeviceList(int deviceType) {
-		super(SocketCommand.COMMAND_REQUEST_MIDI_DEVICE_LIST, (deviceType==DeviceList.TYPE_OUT) ? "out" : "in");
+		super(SocketCommand.COMMAND_REQUEST_MIDI_DEVICE_LIST, (deviceType==DeviceList.TYPE_OUT) ? DeviceList.TYPE_OUT_STRING : DeviceList.TYPE_IN_STRING);
+		System.out.println("RequestMidiDeviceList ctor type = " + deviceType);
 	}
 
 	public int getType() {

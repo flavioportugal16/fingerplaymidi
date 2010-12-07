@@ -20,6 +20,8 @@ public class SetMidiDevice extends SocketStringCommand {
 		else
 			mType = DeviceList.TYPE_IN_STRING;
 		mDevice = device;
+		
+		System.out.println("SetMidiDevice ctor " + type + ", " + device + " this = " + this);
 	}
 
 	public void setMessage(String message) {
@@ -27,6 +29,8 @@ public class SetMidiDevice extends SocketStringCommand {
 		int firstBreak = message.indexOf("%");
 		mType = message.substring(0, firstBreak);
 		mDevice = message.substring(firstBreak+1);
+
+		System.out.println("SetMidiDevice setMessage " + message + ", this = " + this);
 	}
 
 
@@ -43,4 +47,7 @@ public class SetMidiDevice extends SocketStringCommand {
 		return mDevice;
 	}
 
+	public String toString() {
+		return "SetMidiDevice mType: " + mType + ", mDevice: \"" + mDevice + "\"";
+	}
 }

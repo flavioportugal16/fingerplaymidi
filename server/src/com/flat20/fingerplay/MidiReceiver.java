@@ -4,6 +4,8 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
+import com.sun.org.apache.xml.internal.utils.FastStringBuffer;
+
 public class MidiReceiver implements Receiver {
 	private static final String[] SYSTEM_MESSAGE_TEXT = {
 		"System Exclusive (should not be in ShortMessage!)",
@@ -52,10 +54,14 @@ public class MidiReceiver implements Receiver {
 	}
 
 	public void send(MidiMessage message, long timestamp) {
-		System.out.println(timestamp + " " );
+		byte[] mess = message.getMessage();
+		if (message instanceof ShortMessage)
+			decodeMessage((ShortMessage)message);
 	}
 
-	public void decodeMessage(ShortMessage message) {
+	private void decodeMessage(ShortMessage message) {
+		
+		// TODO Send message.getCommand() for good measure?
 		switch (message.getCommand()) {
 			case 0x80:
 				// note off note getData1 ,vel = getData2
