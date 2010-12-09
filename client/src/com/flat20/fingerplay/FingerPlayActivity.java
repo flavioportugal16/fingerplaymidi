@@ -17,6 +17,7 @@ import com.flat20.fingerplay.midicontrollers.MidiControllerManager;
 import com.flat20.fingerplay.network.ConnectionManager;
 import com.flat20.fingerplay.settings.SettingsModel;
 import com.flat20.fingerplay.settings.SettingsView;
+import com.flat20.fingerplay.socket.commands.SocketCommand;
 import com.flat20.gui.InteractiveActivity;
 import com.flat20.gui.NavigationOverlay;
 import com.flat20.gui.sprites.Logo;
@@ -81,6 +82,7 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
         mMidiWidgetsContainer.x = -mWidth;
         AnimationManager.getInstance().add(mwcSplash);
 */
+
     }
 
 	@Override
@@ -90,6 +92,9 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 		mRenderer.addSprite(mLogo);
 
         mMidiWidgetsContainer = new MidiWidgetContainer(mWidth, mHeight);
+
+
+        // Need to run config manager after width and height have been set.
 
         mConfigManager.setDefaultConfigXml( getApplicationContext().getResources().openRawResource(R.raw.layout_default) );
 		mConfigManager.setScreenSize(mWidth, mHeight);

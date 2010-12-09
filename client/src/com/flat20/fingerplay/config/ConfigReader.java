@@ -194,7 +194,7 @@ public class ConfigReader {
 					Element widgetElement = (Element) widgets.item(e);
 					ConfigItem configItem = parseWidget(widgetElement);
 					configScreen.items.add(configItem);
-					System.out.println(configItem);
+					//System.out.println(configItem);
 				}
 			}
 

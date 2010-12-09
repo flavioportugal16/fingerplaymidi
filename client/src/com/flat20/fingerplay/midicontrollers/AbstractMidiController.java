@@ -70,6 +70,15 @@ public abstract class AbstractMidiController implements IMidiController {
 	}
 
 	@Override
+	public void updateParameter(Parameter parameter, int value) {
+		// mView should just have a .update() function and it can check the model
+		// for any updated variables.
+		// or it can share the Parameter list with the controller and that will be
+		// the model.
+		mView.onParameterUpdated(parameter, value);
+	}
+
+	@Override
     public void setOnControlChangeListener(IOnControlChangeListener l) {
     	mListener = l;
     }
