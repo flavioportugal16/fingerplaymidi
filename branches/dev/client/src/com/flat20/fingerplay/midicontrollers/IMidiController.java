@@ -12,6 +12,12 @@ public interface IMidiController extends IConfigurable {
 	// Names (and indices) of all parameters belonging to this controller
 	public Parameter[] getParameters();
 
+	// This is called from view to send a parameter to the server
 	public void sendParameter(int parameterId, int value);
+
+	// This is called from MidiControllerManager when server updates with a new value.
+	// Not very clear.
+	public void updateParameter(Parameter parameter, int value);
+
 	public void setOnControlChangeListener(IOnControlChangeListener l);
 }

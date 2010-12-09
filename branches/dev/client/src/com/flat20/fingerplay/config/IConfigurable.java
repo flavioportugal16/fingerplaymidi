@@ -16,6 +16,7 @@ public interface IConfigurable {
 
 	public void setParameters( ConfigItemParameters parameters);
 
+	// What about controllers without views?
 	public void setView(IConfigItemView view) throws Exception;
 	public IConfigItemView getView();
 

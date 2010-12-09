@@ -3,6 +3,7 @@ package com.flat20.gui.widgets;
 import com.flat20.fingerplay.config.IConfigItemView;
 import com.flat20.fingerplay.config.IConfigurable;
 import com.flat20.fingerplay.midicontrollers.IMidiController;
+import com.flat20.fingerplay.midicontrollers.Parameter;
 
 /**
  * IMidiController and AbstractMidiController deals with sending
@@ -35,6 +36,10 @@ public abstract class MidiWidget extends Widget implements IConfigItemView { //i
 			mMidiController.setView(this);
 		} else
 			throw new Exception("Illegal controller assigned to MidiWidget; Must be of class IMidiController.");
+	}
+	
+	public void onParameterUpdated(Parameter parameter, int value) {
+		System.out.println("MidiWidget.onParameterUpdated");
 	}
 
 	public IMidiController getMidiController() {

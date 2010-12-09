@@ -15,6 +15,8 @@ public class Parameter {
 	public int channel;
 	public int controllerNumber; // or key for NOTEs
 	
+	// TODO public int currentValue ?????
+	
 	public boolean usePressure;
 
 	public Parameter(int id, int channel, int controllerNumber, String name, int type, boolean visible, boolean usePressure) {

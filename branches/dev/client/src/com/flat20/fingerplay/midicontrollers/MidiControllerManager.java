@@ -45,6 +45,23 @@ public class MidiControllerManager implements IConfigUpdateListener {
 	private MidiControllerManager() {
 		mConnectionManager.addConnectionListener(mConnectionListener);
 	}
+	
+	private void test() {
+
+		System.out.println("MidiControllerManager faking socket command from server");
+
+		MidiControlChange mcc;
+		mcc = new MidiControlChange(0xB0, 0, 2, 79);
+        mConnectionListener.onSocketCommand( mcc );
+
+		mcc = new MidiControlChange(0xB0, 0, 1, 79);
+        mConnectionListener.onSocketCommand( mcc );
+
+		mcc = new MidiControlChange(0xB0, 0, 0, 79);
+        mConnectionListener.onSocketCommand( mcc );
+
+
+	}
 
 	// IConfigUpdateListener
 	// Add all MIDI controllers to the MidiControllerManager
@@ -61,6 +78,8 @@ public class MidiControllerManager implements IConfigUpdateListener {
         	}
         }
 
+        
+        test();
 	}
 	// Assigns a separate controller number to each IMidiController if LayoutManager hasn't
 	// assigned it already.
@@ -147,6 +166,9 @@ public class MidiControllerManager implements IConfigUpdateListener {
     	public void onError(String errorMessage) {
     	}
 
+    	
+    	// All midi controllers need to be notified and check internally if the message is for them
+
     	public void onSocketCommand(SocketCommand sm) {
 			if (sm.command == SocketCommand.COMMAND_MIDI_SHORT_MESSAGE) {
 				//Log.i("MidiControllerManager", "server sent cc message");
@@ -154,8 +176,23 @@ public class MidiControllerManager implements IConfigUpdateListener {
 				int ccIndex = msc.data1;
 				Log.i("MidiControllerManager.onSocketCommand", "ccIndex: " + ccIndex);
 				Log.i("MidiControllerManager.onSocketCommand", "channel: " + msc.channel + ", " + msc.command + ", " + msc.data1 + ", " + msc.data2);
-				
-				// TODO Send this command to the midi controllers
+
+				Set<IMidiController> controllers = mMidiControllers.keySet();
+				for (IMidiController controller : controllers) {
+
+					final Parameter[] parameters = controller.getParameters();
+					for (int i=0; i<parameters.length; i++) {
+						if (parameters[i].type == Parameter.TYPE_CONTROL_CHANGE && parameters[i].channel == msc.channel && parameters[i].controllerNumber == msc.data1) {
+							controller.updateParameter(parameters[i], msc.data2);
+							System.out.println("found the controller!" + controller);
+						}
+					}
+
+					//if (mMidiControllers.get(controller) == ccIndex) {
+						//Log.i("MCM", "found midi controller = " + controller);
+					//}
+				}
+
 			}
     	}
     };
