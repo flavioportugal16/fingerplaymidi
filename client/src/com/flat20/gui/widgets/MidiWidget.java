@@ -37,7 +37,7 @@ public abstract class MidiWidget extends Widget implements IConfigItemView { //i
 		} else
 			throw new Exception("Illegal controller assigned to MidiWidget; Must be of class IMidiController.");
 	}
-	
+
 	public void onParameterUpdated(Parameter parameter, int value) {
 		System.out.println("MidiWidget.onParameterUpdated");
 	}
@@ -49,15 +49,15 @@ public abstract class MidiWidget extends Widget implements IConfigItemView { //i
 
 	// Subclasses decide what to do with these.
 	protected void press(float pressure) {
-		// TODO:
-		//if (getMidiController().getParameters()[CC_TOUCH].usePressure)
-			//getMidiController().sendParameter(CC_TOUCH, Math.min(0x7F, Math.round(0x7F * (pressure*4))));
-		//else
-			//getMidiController().sendParameter(CC_TOUCH, 0x7F);
 	}
 
 	protected void release(float pressure) {
 		
 	}
 
+	// Redraw widget. Sort of belongs to Widget because it
+	// it needs to be done after a setSize for example.
+	protected void redraw() {
+		
+	}
 }

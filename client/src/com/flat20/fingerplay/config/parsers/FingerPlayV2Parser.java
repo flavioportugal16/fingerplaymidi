@@ -1,4 +1,4 @@
-package com.flat20.fingerplay.config;
+package com.flat20.fingerplay.config.parsers;
 
 import java.io.File;
 import java.io.InputStream;
@@ -13,6 +13,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.flat20.fingerplay.config.XMLUtils;
 import com.flat20.fingerplay.config.dto.ConfigItem;
 import com.flat20.fingerplay.config.dto.ConfigItemParameters;
 import com.flat20.fingerplay.config.dto.ConfigLayout;
@@ -23,9 +24,9 @@ import com.flat20.fingerplay.config.dto.ConfigScreen;
  * @author andreas.reuterberg
  *
  */
-public class ConfigReader {
+public class FingerPlayV2Parser implements IParser {
 
-	final private Document mXmlDoc;
+	private Document mXmlDoc;
 
 	// Version number found on the root <layouts> tag
 	private int mConfigFileVersion;
@@ -39,24 +40,27 @@ public class ConfigReader {
 	int numButtons = 0;
 
 
-	public ConfigReader(InputStream xmlStream) throws Exception {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		mXmlDoc = db.parse(xmlStream);
-
-		init();
+	public FingerPlayV2Parser() {
+		
 	}
 
-	public ConfigReader(File xmlFile) throws Exception {
+	public void setInput(InputStream xmlStream) throws Exception {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
-		mXmlDoc = db.parse( xmlFile );
 
-		init();
+		init( db.parse(xmlStream) );
 	}
 
-	private void init() throws Exception {
+	public void setInput(File xmlFile) throws Exception {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
 
+		init( db.parse( xmlFile ) );
+	}
+
+	private void init(Document xmlDoc) throws Exception {
+
+		mXmlDoc = xmlDoc;
 		mXmlDoc.getDocumentElement().normalize();
 
 		Element root = mXmlDoc.getDocumentElement();
