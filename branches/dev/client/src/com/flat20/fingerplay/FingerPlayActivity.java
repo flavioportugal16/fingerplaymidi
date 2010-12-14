@@ -28,9 +28,9 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 	private SettingsModel mSettingsModel;
 
     private MidiControllerManager mMidiControllerManager;
-    
+
     private MidiWidgetContainer mMidiWidgetsContainer;
-    
+
     private ConfigManager mConfigManager;
 
     private Logo mLogo;
@@ -109,7 +109,7 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
 
 
         mRenderer.addSprite( mMidiWidgetsContainer );
- 
+
 		// Navigation
         // was 64 for 480
         int navigationWidth = (mWidth > 480) ? 80 : 64;
@@ -118,12 +118,12 @@ public class FingerPlayActivity extends InteractiveActivity implements SensorEve
         mNavigationOverlay.y = 8;//dm.heightPixels/2 - navigationScreen.height/2;
 
         //mNavigationOverlay.z = 2.0f;
- 
+
         //mNavigationButtons.setScreenHeight( 320 );
         // Navigation goes on top.
         mRenderer.addSprite( mNavigationOverlay );
-        
-        
+
+
         
 	}
 

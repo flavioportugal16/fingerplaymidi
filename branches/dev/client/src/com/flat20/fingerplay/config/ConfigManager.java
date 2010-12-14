@@ -10,6 +10,8 @@ import android.os.Environment;
 import com.flat20.fingerplay.config.dto.ConfigItem;
 import com.flat20.fingerplay.config.dto.ConfigLayout;
 import com.flat20.fingerplay.config.dto.ConfigScreen;
+import com.flat20.fingerplay.config.parsers.FingerPlayV2Parser;
+import com.flat20.fingerplay.config.parsers.IParser;
 import com.flat20.fingerplay.settings.SettingsModel;
 
 /**
@@ -56,10 +58,37 @@ public class ConfigManager {
 		mHeight = height;
 	}
 
-	private ConfigReader getReader() {
+	// TODO Make parser settable from the outside.
+	//public void setParser(IParser parser) {
+	//}
 
-		System.out.println("ConfigManager data: " + Environment.getDataDirectory());
-		System.out.println("ConfigManager external: " + Environment.getExternalStorageDirectory());
+	private IParser createParser() {
+		File xmlFile = new File(Environment.getExternalStorageDirectory() + "/FingerPlayMIDI/" + mSettingsModel.layoutFile);
+
+        IParser parser = null;
+        try {
+        	if (mSettingsModel.layoutFile != null && xmlFile != null) {
+    			parser = new FingerPlayV2Parser();
+    			parser.setInput(xmlFile);
+        	}
+		} catch (Exception e) {
+			// Tried loading and parsing file but failed. Most likely the file wasn't there.
+			System.out.println(e);
+		}
+
+		try {
+			if (parser == null && mDefaultConfigXml != null) {
+				mDefaultConfigXml.reset();
+				parser = new FingerPlayV2Parser();
+				parser.setInput( mDefaultConfigXml );
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return parser;
+	}
+	/*
+	private ConfigReader getReader() {
 
 		File xmlFile = new File(Environment.getExternalStorageDirectory() + "/FingerPlayMIDI/" + mSettingsModel.layoutFile);
 
@@ -82,12 +111,12 @@ public class ConfigManager {
 			e.printStackTrace();
 		}
 		return reader;
-	}
+	}*/
 
 	public void updateConfig() throws Exception {
 
-		ConfigReader reader = getReader();
-		if (reader == null)
+		IParser parser = createParser();
+		if (parser == null)
 			throw new Exception("No config file to parse!");
 
 		try {
@@ -95,8 +124,8 @@ public class ConfigManager {
 			// Fills ConfigLayout with all info and controllers from
 			// the config file.
 
-			ConfigLayout layout = reader.selectLayout(mWidth, mHeight);
-			reader.parseLayout(layout); 
+			ConfigLayout layout = parser.selectLayout(mWidth, mHeight);
+			parser.parseLayout(layout); 
 
 
 			// Instantiate controller and view classes.

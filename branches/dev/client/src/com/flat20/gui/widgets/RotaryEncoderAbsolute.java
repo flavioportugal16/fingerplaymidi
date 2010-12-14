@@ -25,9 +25,9 @@ public class RotaryEncoderAbsolute extends RotaryEncoder {
 		mKnobOverlay = new MaterialSprite( Materials.MC_ROTARY_OVERLAY );
 		addSprite(mKnobOverlay);
 
-		addSprite(mOutline);
+		//addSprite(mOutline);
 		//addSprite(mOutlineSelected);
-		addSprite(mTvScanlines);
+		//addSprite(mTvScanlines);
 
 	}
 
@@ -36,7 +36,7 @@ public class RotaryEncoderAbsolute extends RotaryEncoder {
 
 		// First and last segments are hidden under the black knob overlay.
 		final CircleMesh mesh = (CircleMesh)mCircle.getGrid();
-		int visible = Math.round(mAmount * (mesh.getNumSegments()-3)) + 1;
+		int visible = Math.round(mValue * (mesh.getNumSegments()-3)) + 1;
 		mesh.setVisibleSegments( visible );
 
 		final CircleMesh mesh2 = (CircleMesh)mCircleOff.getGrid();
@@ -68,8 +68,8 @@ public class RotaryEncoderAbsolute extends RotaryEncoder {
 		super.setSize(w, h);
 
 		mCircle.setSize(w, h);
-		mCircle.x += w/2 + 1;
-		mCircle.y += h/2;
+		mCircle.x += w/2+1;
+		mCircle.y += h/2-1;
 
 		mCircleOff.setSize(w, h);
 		mCircleOff.x = mCircle.x;
@@ -77,6 +77,7 @@ public class RotaryEncoderAbsolute extends RotaryEncoder {
 
 		mKnobOverlay.setSize(w, h);
 
+		redraw();
 	}
 
 }

@@ -51,15 +51,33 @@ public class MidiControllerManager implements IConfigUpdateListener {
 		System.out.println("MidiControllerManager faking socket command from server");
 
 		MidiControlChange mcc;
+		/*
 		mcc = new MidiControlChange(0xB0, 0, 2, 79);
         mConnectionListener.onSocketCommand( mcc );
-
-		mcc = new MidiControlChange(0xB0, 0, 1, 79);
+*/
+		mcc = new MidiControlChange(0xB0, 0, 3, 66);
+        mConnectionListener.onSocketCommand( mcc );
+/*
+		mcc = new MidiControlChange(0xB0, 0, 0, 64);
         mConnectionListener.onSocketCommand( mcc );
 
-		mcc = new MidiControlChange(0xB0, 0, 0, 79);
+		mcc = new MidiControlChange(0xB0, 0, 3, 62);
+        mConnectionListener.onSocketCommand( mcc );*/
+
+		//mcc = new MidiControlChange(0xB0, 0, 4, 60);
+        //mConnectionListener.onSocketCommand( mcc );
+
+		// should be cc value of 2 sliders.
+		mcc = new MidiControlChange(0xB0, 0, 5, 60);
         mConnectionListener.onSocketCommand( mcc );
 
+		mcc = new MidiControlChange(0xB0, 0, 7, 92);
+        mConnectionListener.onSocketCommand( mcc );
+
+		mcc = new MidiControlChange(0xB0, 0, 11, 119);
+        mConnectionListener.onSocketCommand( mcc );
+		mcc = new MidiControlChange(0xB0, 0, 12, 79);
+        mConnectionListener.onSocketCommand( mcc );
 
 	}
 
@@ -184,7 +202,6 @@ public class MidiControllerManager implements IConfigUpdateListener {
 					for (int i=0; i<parameters.length; i++) {
 						if (parameters[i].type == Parameter.TYPE_CONTROL_CHANGE && parameters[i].channel == msc.channel && parameters[i].controllerNumber == msc.data1) {
 							controller.updateParameter(parameters[i], msc.data2);
-							System.out.println("found the controller!" + controller);
 						}
 					}
 

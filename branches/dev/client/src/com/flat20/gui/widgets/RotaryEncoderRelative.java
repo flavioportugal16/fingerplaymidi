@@ -36,7 +36,7 @@ public class RotaryEncoderRelative extends RotaryEncoder {
 
 		// First and last segments are hidden under the black knob overlay.
 		final CircleMesh mesh = (CircleMesh)mCircle.getGrid();
-		int visible = Math.round(mAmount * (mesh.getNumSegments()-3)) + 1;
+		int visible = Math.round(mValue * (mesh.getNumSegments()-3)) + 1;
 		mesh.setVisibleSegments( visible );
 
 		final CircleMesh mesh2 = (CircleMesh)mCircleOff.getGrid();
@@ -77,6 +77,7 @@ public class RotaryEncoderRelative extends RotaryEncoder {
 
 		mKnobOverlay.setSize(w, h);
 
+		redraw();
 	}
 
 }

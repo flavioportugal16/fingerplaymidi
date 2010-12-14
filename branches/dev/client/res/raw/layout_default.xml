@@ -118,30 +118,40 @@
 	<layout screenWidth="854" screenHeight="480">
 
 		<screen x="0" y="0" width="854" height="478">
-			<!-- 
+ 
 			<xypad x="25" y="56" width="350" height="378" controllerNumber="0">
 				<parameter id="0" name="Press" type="controlChange" controllerNumber="10" />
 				<parameter id="1" name="Horizontal" type="controlChange" controllerNumber="11" />
 				<parameter id="2" name="Vertical" type="controlChange" controllerNumber="12" />
 			</xypad>
+			<!-- 
 			<xypad x="405" y="56" width="350" height="378" controllerNumber="3">
 				<parameter id="0" type="controlChange" />
 				<parameter id="1" type="controlChange" />
 				<parameter id="2" type="controlChange" />
 			</xypad>
 			-->
-
+<!-- 
 			<rotaryencoderabsolute x="255" y="76" width="64" height="64">
 				<parameter id="0" controllerNumber="0" />
 				<parameter id="1" controllerNumber="1" />
 			</rotaryencoderabsolute>
-
-			<rotaryencoderabsolute x="455" y="76" width="128" height="128" />
+ -->
+			<rotaryencoderabsolute x="455" y="76" width="128" height="128">
+				<parameter id="0" controllerNumber="2" />
+				<parameter id="1" controllerNumber="3" />
+			</rotaryencoderabsolute>
 		</screen>
 
 		<screen x="0" y="482" width="854" height="478">
-			<slider x="45" y="32" width="80" height="434" controllerNumber="6" />
-			<slider x="145" y="32" width="80" height="434" controllerNumber="8" />
+			<slider x="45" y="32" width="80" height="434">
+				<parameter id="0" controllerNumber="4" />
+				<parameter id="1" controllerNumber="5" />
+			</slider>
+			<slider x="145" y="32" width="80" height="434">
+				<parameter id="0" controllerNumber="6" />
+				<parameter id="1" controllerNumber="7" />
+			</slider>
 			<slider x="245" y="32" width="80" height="434" controllerNumber="10" />
 			<slider x="345" y="32" width="80" height="434" controllerNumber="12" />
 			<slider x="445" y="32" width="80" height="434" controllerNumber="14" />

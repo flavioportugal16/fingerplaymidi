@@ -1,5 +1,6 @@
 package com.flat20.gui.widgets;
 
+import com.flat20.fingerplay.midicontrollers.Parameter;
 import com.flat20.gui.Materials;
 import com.flat20.gui.sprites.MaterialSprite;
 
@@ -32,6 +33,10 @@ public class XYPad extends DefaultMidiWidget {
 		return null;
 	}
 */
+	
+	float mValueX;
+	float mValueY;
+
 	int lastValueX = -1;
 	int lastValueY = -1;
 
@@ -65,9 +70,17 @@ public class XYPad extends DefaultMidiWidget {
 	public void setSize(int w, int h) {
 		super.setSize(w, h);
 
-		//mMeter.setSize(w, h);
-		//mMeterOff.setSize(w, h);
+		redraw();
+	}
 
+	@Override 
+	public void redraw() {
+		int x = (int)(mValueX*width);
+		int y = (int)(mValueY*height);
+		mMeter.x = Math.max(0, Math.min(width-32, x-16));
+		mMeterOff.x = mMeter.x;
+		mMeter.y = Math.max(0, Math.min(height-32, y-16));
+		mMeterOff.y = mMeter.y;
 	}
 
 	@Override
@@ -78,20 +91,24 @@ public class XYPad extends DefaultMidiWidget {
 
 	@Override
 	public boolean onTouchMove(int touchX, int touchY, float pressure, int pointerId) {
-		int valueX = (int) Math.max(0, Math.min(0x7F, ((float) touchX / width) * 0x7F) );
-		int valueY = (int) Math.max(0, Math.min(0x7F, ((float) touchY / height) * 0x7F) );
+		mValueX = (float) touchX / width;
+		mValueY = (float) touchY / height;
+		int valueX = (int) Math.max(0, Math.min(0x7F, (mValueX * 0x7F)) );
+		int valueY = (int) Math.max(0, Math.min(0x7F, (mValueY * 0x7F)) );
 		if (valueX != lastValueX) {
 			getMidiController().sendParameter(CC_X, valueX);
+			redraw();
 			//sendControlChange(CC_X, valueX );
-			mMeter.x = Math.max(0, Math.min(width-32, touchX-16));
-			mMeterOff.x = mMeter.x;
+			//mMeter.x = Math.max(0, Math.min(width-32, touchX-16));
+			//mMeterOff.x = mMeter.x;
 			lastValueX = valueX;
 		}
 		if (valueY != lastValueY) {
 			getMidiController().sendParameter(CC_Y, valueY);
+			redraw();
 			//sendControlChange(CC_Y, valueY );
-			mMeter.y = Math.max(0, Math.min(height-32, touchY-16));
-			mMeterOff.y = mMeter.y;
+			//mMeter.y = Math.max(0, Math.min(height-32, touchY-16));
+			//mMeterOff.y = mMeter.y;
 			lastValueY = valueY;
 		}
 		return true;
@@ -99,27 +116,19 @@ public class XYPad extends DefaultMidiWidget {
 
 	@Override
 	public boolean onTouchUp(int touchX, int touchY, float pressure, int pointerId) {
-		//if (!isHolding())
-			release(pressure);
+		release(pressure);
 		return true;
 	}
 
 	@Override
 	public boolean onTouchUpOutside(int touchX, int touchY, float pressure, int pointerId) {
-		//if (!isHolding())
-			release(pressure);
+		release(pressure);
 		return true;
 	}
 
 	@Override
 	protected void press(float pressure) {
 		getMidiController().sendParameter(CC_TOUCH, 0x7F);
-/*
-		if (mParameters[CC_TOUCH].type == Parameter.TYPE_CONTROL_CHANGE)
-			sendControlChange(CC_TOUCH, 0x7F);
-		else
-			sendNoteOn(CC_TOUCH, Math.min(0x7F, Math.round(0x7F * (pressure*3))));
-*/
 		mMeter.visible = true;
 		mMeterOff.visible = false;
 	}
@@ -127,14 +136,21 @@ public class XYPad extends DefaultMidiWidget {
 	@Override
 	protected void release(float pressure) {
 		getMidiController().sendParameter(CC_TOUCH, 0x00);
-/*
-		if (mParameters[CC_TOUCH].type == Parameter.TYPE_CONTROL_CHANGE)
-			sendControlChange(CC_TOUCH, 0x00);
-		else
-			sendNoteOff(CC_TOUCH, 0x00);
-*/
 		mMeter.visible = false;
 		mMeterOff.visible = true;
+	}
+
+	public void onParameterUpdated(Parameter parameter, int value) {
+		switch (parameter.id) {
+			case CC_X:
+				mValueX = (float)value/0x7F;
+				redraw();
+				break;
+			case CC_Y:
+				mValueY = (float)value/0x7F;
+				redraw();
+				break;
+		}
 	}
 
 }
