@@ -3,9 +3,9 @@
   * MIDI note for hardware keys (have a look at http://code.google.com/p/remotedroid/ )
   * New widgets:
     * Color picker  
-    * Rotary knob
+    * __Rotary knob__
     * Custom widgets for sensors
-  * Two-way communication (think motorized slides in hardware MIDI controllers)
+  * __Two-way communication (think motorized slides in hardware MIDI controllers)__
   * Ability to send new layouts from the server
   * Ability to send layouts from the client (autoconf)
   * Send OSC only and let the FP server convert it to MIDI.
