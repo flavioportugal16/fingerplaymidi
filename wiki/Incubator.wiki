@@ -1,5 +1,6 @@
 #summary Ideas for new features
 
+  * Support for ArtNet: http://www.thedmxwiki.com/definitions/artnet
   * MIDI note for hardware keys (have a look at http://code.google.com/p/remotedroid/ )
   * New widgets:
     * Color picker  
