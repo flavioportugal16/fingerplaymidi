@@ -12,3 +12,4 @@
   * _Ability to send layouts from the client (autoconf)_
   * Send OSC only and let the FP server convert it to MIDI.
   * Ability to change background image
+  * QWERTY support
